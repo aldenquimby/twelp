@@ -40,50 +40,11 @@
         <h2>Full-screen, no-nonsense, classic arcade games</h2>
       </div>
       <div class="row-fluid">
-        <div class="games">
-          <a class="game well" href="/snake">
-            <div class="game-desc span9">
-              <h2>SNAKE</h2>
-              <p>Eat food. Grow longer. <br/>Don't hit yourself.</p>
-            </div>
-            <div class="game-img span3">
-              <div class="well">
-                <img src="/images/facebookpic.png" alt="" />
-              </div>
-            </div>
-          </a>
-          <a class="game well" href="/falldown">
-            <div class="game-desc span9">
-              <h2>FALLDOWN</h2>
-              <p>Move around. Fall down. <br/>Then fall farther.</p>
-            </div>
-            <div class="game-img span3">
-              <div class="well">
-                <img src="/images/facebookpic.png" alt="" />
-              </div>
-            </div>
-          </a>
-          <a class="game well" href="/pacxon">
-            <div class="game-desc span9">
-              <h2>PACXON</h2>
-              <p>Trap enemies. <br/>Don't let them hit you.</p>
-            </div>
-            <div class="game-img span3">
-              <div class="well">
-                <img src="/images/facebookpic.png" alt="" />
-              </div>
-            </div>
-          </a>
-        </div>
+        {{tweets}}
       </div>
       <footer class="row-fluid">
         <div class="built-by">
           <p>Built by <a href="http://www.emdaq.com">Emdaq</a>.</p>
-          </div>
-        <div class="lightswitch">
-          <div class="switch" data-on-label="LITE" data-off-label="DRK">
-            <input type="checkbox" id="light" checked="" />
-          </div>
         </div>
       </footer>
   </body>
@@ -95,22 +56,7 @@
   <script type="text/javascript" src="/javascripts/framework/flatui-radio.js"></script>
   <script type="text/javascript">
     $(function () {
-      $('#light').change(function() {
-        if ($(this).is(':checked')) {
-          $('body').addClass('light-background');
-          $('body').removeClass('dark-background');
-        } else {
-          $('body').removeClass('light-background');
-          $('body').addClass('dark-background');
-        }
-      });
-
-      var hour = new Date().getHours();
-      if (hour > 18 || hour < 6) {
-        setTimeout(function() {
-          $('#light').click();
-        }, 500);
-      }
+      
     });
   </script>
 </html>

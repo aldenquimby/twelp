@@ -32,8 +32,6 @@ var express = require('express');
 var index = require('./routes/index');
 var twelp = require('./routes/twelp');
 var app = express();
-var tsession = require("temboo/core/temboosession");
-var session = new tsession.TembooSession(keys.TEMBOO_ACCOUNT_NAME, keys.TEMBOO_APP_NAME, keys.TEMBOO_APP_KEY);
 
 // **************************
 // ******* MIDDLEWARE *******

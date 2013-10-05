@@ -1,9 +1,10 @@
 
+var temboo = require('./tembooApi').getSession();
 var Yelp = require("temboo/Library/Yelp");
 
-exports.searchByCity(temboo) {
+exports.search = function(callback) {
 
-	var searchByCityChoreo = new Yelp.SearchByCity(session);
+	var searchByCityChoreo = new Yelp.SearchByCity(temboo);
 
 	// Instantiate and populate the input set for the choreo
 	var searchByCityInputs = searchByCityChoreo.newInputSet();
@@ -12,18 +13,19 @@ exports.searchByCity(temboo) {
 	searchByCityInputs.setCredential('Yelp');
 
 	// Set inputs
-	searchByCityInputs.set_Count("100");
+	searchByCityInputs.set_Count("20");
 	searchByCityInputs.set_BusinessType("restaurants");
 	searchByCityInputs.set_City("New York");
 
 	// Run the choreo, specifying success and error callback handlers
 	searchByCityChoreo.execute(searchByCityInputs,
 	    function(results) {
-	    	console.log(results.get_Response());
+	    	console.log(results);
+	    	callback(results.get_Response());
 	    },
 	    function(error) {
 	    	console.log(error.type); 
 	    	console.log(error.message);
 	    }
     );
-}
+};

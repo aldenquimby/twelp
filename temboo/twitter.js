@@ -1,9 +1,10 @@
 
+var temboo = require('./tembooApi').getSession();
 var Twitter = require("temboo/Library/Twitter/Search");
 
-exports.search(temboo) {
+exports.search = function(callback) {
 
-	var tweetsChoreo = new Twitter.Tweets(session);
+	var tweetsChoreo = new Twitter.Tweets(temboo);
 
 	// Instantiate and populate the input set for the choreo
 	var tweetsInputs = tweetsChoreo.newInputSet();
@@ -21,11 +22,13 @@ exports.search(temboo) {
 	// Run the choreo, specifying success and error callback handlers
 	tweetsChoreo.execute(tweetsInputs,
 	    function(results) {
-	    	console.log(results.get_Limit());
+	    	console.log(results);
+	    	callback(results);
+	    	console.log(results.get_Response());
 	    },
 	    function(error) {
 	    	console.log(error.type); 
 	    	console.log(error.message);
 	    }
 	);	
-}
+};
