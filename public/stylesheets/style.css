@@ -1,0 +1,85 @@
+.canvasContainer {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  overflow: visible;
+}
+
+.game-wrapper {
+	position: fixed;
+	right: 250px;
+	top: 50px;
+	padding: 0px; 
+}
+
+.switch {
+	position: fixed;
+	right: 50px;
+	bottom: 40px;
+}
+
+.highscore {
+ 	background: #ECF0F1;
+ 	padding: 10px;
+	font-size: larger;
+}
+.rank {
+	float: left;
+	width: 12%;
+	font-weight: bold;
+}
+.score {
+	float: left;
+}
+.username {
+	float: left;
+	width: 70%;
+}
+.lastscore-row .username {
+	width: 82%;
+}
+.highscore-row {
+	padding-left: 20px;
+	min-width: 200px;
+}
+.highscores {
+	padding-bottom: 0px;
+	padding-top: 10px;
+	background: #1ABC9C;
+	margin-left: 77%;
+	min-width: 220px;
+}
+.highscores h3 {
+	color: white;
+	text-align: center;
+}
+#username {
+	width: 76%;
+	margin: 0px;
+	margin-right:12px;
+	float:left;
+	border: none;
+	margin-left: -10px;
+	margin-top: -10px;
+	height: 24px;
+}
+.newscore-row {
+	display:none;
+}
+.newscore-row .highscore {
+	border: 3px solid;
+}
+.lastscore-row {
+	display:none;
+}
+.lastscore-row .highscore {
+	border: 3px solid;
+}
+#loader {
+	margin-left: 40%;
+	margin-right: 20px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}

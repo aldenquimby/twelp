@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='/stylesheets/bootstrap.css' />
+    <link rel="stylesheet" href="/less/flat-ui.css" />
+    <link rel='stylesheet' href='/less/index.css' />
+    <link rel="icon" type="image/png" href="{{imageUrl}}" />
+    
+    <!-- regular meta info -->
+    <title>{{siteTitle}}</title>
+    <meta name="description" content="{{description}}">
+    <meta name="keywords" content="{{keywords}}">
+    <link rel="author" href="https://plus.google.com/107527521791596322641" />
+    <link rel="canonical" href="{{url}}" />
+
+    <!-- facebook meta info -->
+    <meta property="og:url" content="{{url}}">
+    <meta property="og:image" content="{{imageUrl}}">
+    <meta property="og:description" content="{{description}}">
+    <meta property="og:title" content="{{pageTitle}}">
+    <meta property="og:site_name" content="{{siteTitle}}">
+    <meta property="og:see_also" content="{{seeAlso}}">
+
+    <!-- google plus meta info -->
+    <meta itemprop="name" content="{{title}}">
+    <meta itemprop="description" content="{{description}}">
+    <meta itemprop="image" content="{{imageUrl}}">
+
+    <!-- twitter meta info -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="{{url}}">
+    <meta name="twitter:title" content="{{pageTitle}}">
+    <meta name="twitter:description" content="{{description}}">
+    <meta name="twitter:image" content="{{imageUrl}}">
+  </head>
+  <body class="light-background">
+    <div class="container-fluid">
+      <div class="hero-unit">
+        <h1>Emdaq Games</h1>
+        <h2>Full-screen, no-nonsense, classic arcade games</h2>
+      </div>
+      <div class="row-fluid">
+        <div class="games">
+          <a class="game well" href="/snake">
+            <div class="game-desc span9">
+              <h2>SNAKE</h2>
+              <p>Eat food. Grow longer. <br/>Don't hit yourself.</p>
+            </div>
+            <div class="game-img span3">
+              <div class="well">
+                <img src="/images/facebookpic.png" alt="" />
+              </div>
+            </div>
+          </a>
+          <a class="game well" href="/falldown">
+            <div class="game-desc span9">
+              <h2>FALLDOWN</h2>
+              <p>Move around. Fall down. <br/>Then fall farther.</p>
+            </div>
+            <div class="game-img span3">
+              <div class="well">
+                <img src="/images/facebookpic.png" alt="" />
+              </div>
+            </div>
+          </a>
+          <a class="game well" href="/pacxon">
+            <div class="game-desc span9">
+              <h2>PACXON</h2>
+              <p>Trap enemies. <br/>Don't let them hit you.</p>
+            </div>
+            <div class="game-img span3">
+              <div class="well">
+                <img src="/images/facebookpic.png" alt="" />
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <footer class="row-fluid">
+        <div class="built-by">
+          <p>Built by <a href="http://www.emdaq.com">Emdaq</a>.</p>
+          </div>
+        <div class="lightswitch">
+          <div class="switch" data-on-label="LITE" data-off-label="DRK">
+            <input type="checkbox" id="light" checked="" />
+          </div>
+        </div>
+      </footer>
+  </body>
+  <script type="text/javascript" src="/javascripts/framework/jquery-2.0.3.min.js"></script>
+  <script type="text/javascript" src="/javascripts/framework/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/javascripts/framework/bootstrap-select.js"></script>
+  <script type="text/javascript" src="/javascripts/framework/bootstrap-switch.js"></script>
+  <script type="text/javascript" src="/javascripts/framework/flatui-checkbox.js"></script>
+  <script type="text/javascript" src="/javascripts/framework/flatui-radio.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $('#light').change(function() {
+        if ($(this).is(':checked')) {
+          $('body').addClass('light-background');
+          $('body').removeClass('dark-background');
+        } else {
+          $('body').removeClass('light-background');
+          $('body').addClass('dark-background');
+        }
+      });
+
+      var hour = new Date().getHours();
+      if (hour > 18 || hour < 6) {
+        setTimeout(function() {
+          $('#light').click();
+        }, 500);
+      }
+    });
+  </script>
+</html>
