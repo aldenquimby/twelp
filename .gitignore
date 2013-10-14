@@ -7,11 +7,15 @@ lib-cov
 *.pid
 *.gz
 
-pids
+# logs
 logs
-results
-
 npm-debug.log
+
+# dependencies
 node_modules
 
+# private keys
 keys.js
+
+# compiled less
+*/less/*.css

@@ -40,7 +40,7 @@
         <h2>Full-screen, no-nonsense, classic arcade games</h2>
       </div>
       <div class="row-fluid">
-        {{tweets}}
+        {{tResp}}
       </div>
       <footer class="row-fluid">
         <div class="built-by">

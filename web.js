@@ -27,7 +27,6 @@ mongoose.connect(process.env.DATABASE_URL);
 // ****** DEPENDENCIES ******
 // **************************
 
-var keys = require('./keys');
 var express = require('express');
 var index = require('./routes/index');
 var twelp = require('./routes/twelp');
@@ -62,6 +61,8 @@ app.configure('production', function(){
 // **************************
 
 app.get('/', index.index);
+app.get('/startTwitterStream', index.startTwitterStream);
+app.get('/stopTwitterStream', index.stopTwitterStream);
 app.get('/twelp', twelp.findAll);
 app.post('/twelp', twelp.create);
 app.get('/twelp/:id', twelp.findById);
