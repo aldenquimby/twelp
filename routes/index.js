@@ -37,10 +37,7 @@ exports.index = function(req, res) {
 var stream = null;
 
 exports.startTwitterStream = function(req, res) {
-	var logFile = 'logs/poison-stream-' + new Date().toJSON().replace(/:|-/g, '').replace('.', ''); + '.json';
-	winston.add(winston.transports.File, { filename: logFile })
-		   .remove(winston.transports.Console);
-
+	var logger = getFileLogger('poison-stream');
 	console.log('starting stream');
 
 	stream = twitter.stream('statuses/filter', { 
@@ -49,9 +46,8 @@ exports.startTwitterStream = function(req, res) {
 		locations: [ '-122.75', '36.8', '-121.75', '37.8' ]
 	});
 
-	winston.info('[');
 	stream.on('tweet', function (tweet) {
-		winston.info(tweet + ',');
+		logger.info(tweet);
 		console.log('got new tweet');
 	});
 
@@ -62,48 +58,40 @@ exports.stopTwitterStream = function(req, res) {
 	if (stream) {
 		console.log('stopping stream');
 		stream.stop();
-		winston.info(']');
 	}
 
 	res.send('success');
 };
 
+function getFileLogger(name) {
+	var logFile = 'logs/' + name + '-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
+	var logger = new (winston.Logger)({
+	    transports: [new (winston.transports.File)({ 
+	    	filename: logFile
+	    })]
+	});
+	return logger;
+}
+
 function searchTwitter(callback) {
-	var logFile = 'logs/poison-search-' + new Date().toJSON().replace(/:|-/g, '').replace('.', ''); + '.json';
-	winston.add(winston.transports.File, { filename: logFile })
-		   .remove(winston.transports.Console);
+	var logger = getFileLogger('poison-search');
 	console.log('searching twitter');
 	twitter.get('search/tweets', { 
 		q: 'poison', 
 		count: 100,
 		lang: 'en',
 		result_type: 'recent',
-		geocode: '37.781157,-122.398720,5mi'
+		geocode: '37.781157,-122.398720,5mi',
+		include_entities: 1
 	}, function(err, reply) {
 		if (err) {
 			console.log('Twitter API failed!');
 			console.log(err);
 		} else {
-			winston.info(reply);
+			logger.info(reply);
 			callback(reply);
 		}
 	});
-}
-
-function streamTwitter() {
-	console.log('streaming twitter');
-	var stream = twitter.stream('statuses/filter', { 
-		track: 'poison',
-		language: 'en',
-		locations: [ '-122.75', '36.8', '-121.75', '37.8' ]
-	});
-
-	stream.on('tweet', function (tweet) {
-	  console.log(tweet);
-	});
-
-	// save stream for later so we can close it
-	req.session.stream = stream;
 }
 
 function searchYelp(callback) {
