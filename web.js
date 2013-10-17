@@ -3,25 +3,8 @@
 // **************************
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-process.env.PORT = process.env.PORT || 5115;
-
-/*
-process.env.DATABASE_URL = process.env.DATABASE_URL || require('./keys').DATABASE_URL;
-
-var mongoose = require('mongoose');
-var db = mongoose.connection;
-
-// connect to mongo
-db.on('error', function(err) {
-  console.error(err);
-});
-db.once('open', function callback() {
-  console.log('opened mongo connection');
-  blogs.registerSchema();
-});
-
-mongoose.connect(process.env.DATABASE_URL);
-*/
+var port = process.env.PORT || 5115;
+var dbUrl = process.env.DATABASE_URL;
 
 // **************************
 // ****** DEPENDENCIES ******
@@ -29,8 +12,20 @@ mongoose.connect(process.env.DATABASE_URL);
 
 var express = require('express');
 var index = require('./routes/index');
-var twelp = require('./routes/twelp');
 var app = express();
+var database = require('./api/database');
+
+// **************************
+// ******** DATABASE ********
+// **************************
+
+dbUrl = dbUrl || require('./keys').DATABASE_URL;
+database.connect(dbUrl, function() {
+	console.log('opened mongo connection');
+}, function(err) {
+	console.log(err);
+	process.exit(1);
+});
 
 // **************************
 // ******* MIDDLEWARE *******
@@ -63,16 +58,11 @@ app.configure('production', function(){
 app.get('/', index.index);
 app.get('/startTwitterStream', index.startTwitterStream);
 app.get('/stopTwitterStream', index.stopTwitterStream);
-app.get('/twelp', twelp.findAll);
-app.post('/twelp', twelp.create);
-app.get('/twelp/:id', twelp.findById);
-app.put('/twelp/:id', twelp.update);
-app.del('/twelp/:id', twelp.remove);
 
 // **************************
 // ****** START SERVER ******
 // **************************
 
-app.listen(process.env.PORT, function() {
-  console.log('Express server listening on port ' + process.env.PORT);
+app.listen(port, function() {
+  console.log('Express server listening on port ' + port);
 });

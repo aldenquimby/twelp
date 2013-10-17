@@ -1,5 +1,6 @@
 
-var winston = require('winston');
+var log = require('../log');
+var twitter = require('../api/twitterApi');
 var keys = require('../keys');
 var yelp = require("yelp").createClient({
   consumer_key: keys.YELP_CONSUMER_KEY, 
@@ -7,46 +8,36 @@ var yelp = require("yelp").createClient({
   token: keys.YELP_ACCESS_TOKEN,
   token_secret: keys.YELP_ACCESS_SECRET
 });
-var twit = require('twit');
-var twitter = new twit({
-  consumer_key: keys.TWITTER_CONSUMER_KEY,
-  consumer_secret: keys.TWITTER_CONSUMER_SECRET,
-  access_token: keys.TWITTER_ACCESS_TOKEN,
-  access_token_secret: keys.TWITTER_ACCESS_SECRET
-});
 
 exports.index = function(req, res) {
-	searchTwitter(function(tResp) {
-		res.json(tResp);
-		//yelp.search(function(yResp) {
-		//	res.render('index', { 
-	//			pageTitle: 'Emdaq Games',
-	//			siteTitle: 'Emdaq Games',
-	//			description: 'Fullscreen, no-nonsense, classic arcade games. Built by Emdaq.',
-	//			keywords: 'arcadegames,games',
-	//			imageUrl: 'http://games.emdaq.com/images/facebookpic.png',
-	//			url: 'http://games.emdaq.com',
-	//			seeAlso: 'http://www.emdaq.com',
-	//			yResp: '',
-	//			tResp: JSON.stringify(tResp)
-	//		});
-		//});
-	});
+	searchTwitter(req, res);
 };
 
-var stream = null;
+exports.searchTwitter = function(req, res) {
+
+	var logger = log.getFileLogger('poison-search');
+	console.log('searching twitter');
+
+	twitter.search('food poisoning', '37.781157,-122.398720,5mi', function(err, reply) {
+		if (err) {
+			console.log('Twitter API failed!');
+			console.log(err);
+		} else {
+			logger.info(reply);
+			res.json(reply);
+		}
+	});
+};
 
 exports.startTwitterStream = function(req, res) {
 	var logger = getFileLogger('poison-stream');
 	console.log('starting stream');
 
-	stream = twitter.stream('statuses/filter', { 
+	twitter.startStream({ 
 		track: 'poison',
 		language: 'en',
 		locations: [ '-122.75', '36.8', '-121.75', '37.8' ]
-	});
-
-	stream.on('tweet', function (tweet) {
+	}, function(tweet) {
 		logger.info(tweet);
 		console.log('got new tweet');
 	});
@@ -55,11 +46,8 @@ exports.startTwitterStream = function(req, res) {
 };
 
 exports.stopTwitterStream = function(req, res) {
-	if (stream) {
-		console.log('stopping stream');
-		stream.stop();
-	}
-
+	console.log('stopping stream');
+	twitter.stopStream();
 	res.send('success');
 };
 
@@ -71,27 +59,6 @@ function getFileLogger(name) {
 	    })]
 	});
 	return logger;
-}
-
-function searchTwitter(callback) {
-	var logger = getFileLogger('poison-search');
-	console.log('searching twitter');
-	twitter.get('search/tweets', { 
-		q: 'poison', 
-		count: 100,
-		lang: 'en',
-		result_type: 'recent',
-		geocode: '37.781157,-122.398720,5mi',
-		include_entities: 1
-	}, function(err, reply) {
-		if (err) {
-			console.log('Twitter API failed!');
-			console.log(err);
-		} else {
-			logger.info(reply);
-			callback(reply);
-		}
-	});
 }
 
 function searchYelp(callback) {

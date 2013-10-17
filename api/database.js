@@ -1,63 +1,47 @@
 
 var _ = require('underscore');
-var mongoose = require('mongoose');
-var db = mongoose.connection;
+var schema = require('./schema');
+var mongoose = require('mongoose'),
+    db = mongoose.connection;
 
-exports.registerSchema = function() {
-	mongoose.model('Blog', new mongoose.Schema({
-	  title:  String,
-	  author: String,
-	  body:   String,
-	  comments: [{ body: String, date: Date }],
-	  date: { type: Date, default: Date.now },
-	  hidden: Boolean,
-	  meta: {
-	    votes: Number,
-	    favs:  Number
-	  }
-	}));
-}
-
-exports.populateSchema = function() {
-	var Blog = db.model('Blog');
-
-	var blogs = [
-		new Blog({
-			title:'Impossiblilty', 
-			author: 'Audrey Hepburn', 
-			body: "Nothing is impossible, the word itself says 'I'm possible'!"
-		}),
-		new Blog({
-			title:'Whats up doc', 
-			author: 'Walt Disney', 
-			body: "You may not realize it when it happens, but a kick in the teeth may be the best thing in the world for you"
-		}),
-		new Blog({
-			title:'Beginners', 
-			author: 'Unknown', 
-			body: "Even the greatest was once a beginner. Don't be afraid to take that first step."
-		}),
-		new Blog({
-			title:'Life', 
-			author: 'Neale Donald Walsch', 
-			body: "You are afraid to die, and you're afraid to live. What a way to exist."
-		})
-	];
-
-	_.each(blogs, function(blog) {
-		blog.save(function (err) {
-		  if (err) {
-			console.error(err);
-		  }
-		  else {
-		  	console.log('saved blog');
-		  }
-		});
+exports.connect = function(dbUrl, callback, errorCallback) {
+	db.on('error', errorCallback);
+	db.once('open', function() {
+		mongoose.model('Tweet', schema.TweetSchema);
+		mongoose.model('ClassifiedTweet', schema.ClassifiedTweetSchema);
+		callback();
 	});
+	mongoose.connect(dbUrl);
+};
 
-	console.log('populated schema');
-}
+exports.saveTweets = function(tweets, callback, errorCallback) {
+	var Tweet = db.model('Tweet');
+	Tweet.create(tweets, function (err) {
+		if (err) {
+			errorCallback(err);
+		} else {
+			// all other arguments are tweets
+			var createdTweets = _.rest(arguments);
+			callback(createdTweets);
+		}
+	});
+};
 
+exports.getMaxTweetId = function(callback, errorCallback) {
+	var Tweet = db.model('Tweet');
+	Tweet.findOne()
+		 .sort('-id')
+		 .exec(function(err, doc) {
+ 			if (err) {
+				errorCallback(err);
+			} else {
+				var maxId = (doc || {}).id;
+    			callback(maxId);
+			}
+		});
+};
+
+/*
 exports.findAll = function(req, res) {
 	var Blog = db.model('Blog');
 	Blog.find(function(err, blogs) {
@@ -155,3 +139,4 @@ exports.update = function(req, res) {
 		res.json(blog);
 	});
 }
+*/
