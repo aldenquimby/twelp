@@ -16,7 +16,7 @@ exports.startStream = function(filterParam, onTweetCallback) {
 
 exports.stopStream = function() {
 	if (stream) {
-		stream.stop();
+		stream.stop();	
 	}
 };
 
@@ -30,7 +30,11 @@ exports.search = function(query, geocode, since_id, callback) {
 		include_entities: 1,
 		since_id: since_id
 	};
-	twitter.get('search/tweets', searchParam, callback);
+	searchWithParam(searchParam, callback);
+};
+
+exports.searchWithParam = function(param, callback) {
+	twitter.get('search/tweets', param, callback);
 };
 
 /*

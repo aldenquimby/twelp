@@ -12,7 +12,8 @@
     "mongoose": "3.6.x",
     "less-middleware": "0.1.x",
     "hjs": "2.x.x",
-    "temboo": "1.x.x"
+    "temboo": "1.x.x",
+    "forEachAsync": "~3.0.0-rc1"
   },
   "devDependencies": {
     "frisby": "0.6.x"
