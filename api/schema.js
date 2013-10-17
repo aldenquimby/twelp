@@ -38,7 +38,7 @@ var TweetSchema = new Schema({
     		coordinates: []
     	}
     },
-    timestamp: { type: Date, default: Date.now },
+    class_label: String,
 });
 
 TweetSchema.pre('save', function (next) {

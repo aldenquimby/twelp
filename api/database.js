@@ -41,6 +41,29 @@ exports.getMaxTweetId = function(callback, errorCallback) {
 		});
 };
 
+exports.getUnlabeledTweets = function(callback, errorCallback) {
+	var Tweet = db.model('Tweet');
+	Tweet.find({class_label: {$exists: false}})
+		 .exec(function(err, doc) {
+ 			if (err) {
+				errorCallback(err);
+			} else {
+    			callback(doc);
+			}
+		});
+};
+
+exports.labelTweet = function(id, class_label, callback, errorCallback) {
+	var Tweet = db.model('Tweet');
+	Tweet.findByIdAndUpdate(id, {class_label:class_label}, function(err, updatedTweet) {
+		if (err) {
+			errorCallback(err);
+		} else {
+			callback(updatedTweet);
+		}
+	});
+};
+
 /*
 exports.findAll = function(req, res) {
 	var Blog = db.model('Blog');

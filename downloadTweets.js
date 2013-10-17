@@ -3,8 +3,8 @@
 // **************************
 
 var dbUrl = process.env.DATABASE_URL;
-var query = process.argv[2];
-var city = process.argv[3];
+var query = process.argv.length > 2 ? process.argv[2] : 'food poisoning';
+var city = process.argv.length > 3 ? process.argv[3] : 'NYC';
 
 // **************************
 // ****** DEPENDENCIES ******
@@ -20,15 +20,6 @@ var schema       = require('./api/schema');
 // ******** DOWNLOAD ********
 // **************************
 
-// connect to database
-dbUrl = dbUrl || require('./keys').DATABASE_URL;
-database.connect(dbUrl, function() {
-	console.log('opened mongo connection');
-}, function(err) {
-	bail('mongo connection failed', err);
-});
-
-// search for tweets
 var cities = {
 	NYC: '40.6700,-73.9400,13mi',
 	SF:  '37.7495,-122.4423,6mi',
@@ -37,37 +28,42 @@ var cities = {
 	CHI: '41.8607,-87.6408,16mi',
 };
 
-setTimeout(function() {
+dbUrl = dbUrl || require('./keys').DATABASE_URL;
 
-database.getMaxTweetId(function(maxId) {
-	console.log('Got max tweet id: ' + maxId);
+database.connect(dbUrl, function() {
+	console.log('Opened db connection.');
 
-	// if we have a max id, this will search for all tweets since it
-	// otherwise it will get all tweets in the past week, because
-	// the search API only returns tweets from the past week
-	var searchParam = {
-		q: query, 
-		count: 100,
-		lang: 'en',
-		result_type: 'recent',
-		geocode: cities[city],
-		include_entities: 1,
-		since_id: maxId
-	};
+	database.getMaxTweetId(function(maxId) {
+		console.log('Got max tweet id: ' + maxId);
 
-	var queries = [serializeQs(searchParam)];
-	forEachAsync(queries, function(next, element, index, array) {
-		searchTwitter(element, array, next);
-	}).then(function() {
-		console.log('Done!');
-		process.exit(0);
+		// if we have a max id, this will search for all tweets since it
+		// otherwise it will get all tweets in the past week, because
+		// the search API only returns tweets from the past week
+		var searchParam = {
+			q: query, 
+			count: 100,
+			lang: 'en',
+			result_type: 'recent',
+			geocode: cities[city],
+			include_entities: 1,
+			since_id: maxId
+		};
+
+		var queries = [serializeQs(searchParam)];
+		forEachAsync(queries, function(next, element, index, array) {
+			searchTwitter(element, array, next);
+		}).then(function() {
+			console.log('Done!');
+			process.exit(0);
+		});
+
+	}, function(err) {
+		bail('Database failed!', err);
 	});
 
 }, function(err) {
-	bail('Database failed!', err);
+	bail('mongo connection failed', err);
 });
-
-}, 2000);
 
 searchTwitter = function(query, queries, next) {
 	var param = deserializeQs(query);
@@ -89,20 +85,20 @@ searchTwitter = function(query, queries, next) {
 			bail('Database failed!', err);
 		});
 	});
-}
+};
 
 bail = function(msg, err) {
 	console.log(msg);
 	console.log(err);
 	process.exit(1);
-}
+};
 
 serializeQs = function(obj) {
   var str = [];
   for(var p in obj)
      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
   return str.join("&");
-}
+};
 
 deserializeQs = function(query) {
 	if (query[0] == '?') {
@@ -118,4 +114,4 @@ deserializeQs = function(query) {
         b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
     }
     return b;
-}
+};
