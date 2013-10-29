@@ -11,7 +11,6 @@ var city = process.argv.length > 3 ? process.argv[3] : 'NYC';
 // **************************
 
 var _            = require('underscore');
-var forEachAsync = require('forEachAsync').forEachAsync;
 var twitter      = require('./api/twitterApi');
 var database     = require('./api/database');
 var schema       = require('./api/schema');
@@ -49,13 +48,7 @@ database.connect(dbUrl, function() {
 			since_id: maxId
 		};
 
-		var queries = [serializeQs(searchParam)];
-		forEachAsync(queries, function(next, element, index, array) {
-			searchTwitter(element, array, next);
-		}).then(function() {
-			console.log('Done!');
-			process.exit(0);
-		});
+		searchTwitter(serializeQs(searchParam));
 
 	}, function(err) {
 		bail('Database failed!', err);
@@ -65,7 +58,7 @@ database.connect(dbUrl, function() {
 	bail('mongo connection failed', err);
 });
 
-searchTwitter = function(query, queries, next) {
+searchTwitter = function(query) {
 	var param = deserializeQs(query);
 	twitter.searchWithParam(param, function(err, resp) {
 		if (err) {
@@ -77,10 +70,15 @@ searchTwitter = function(query, queries, next) {
 		
 		database.saveTweets(tweets, function(createdTweets) {
 			console.log('Saved ' + createdTweets.length + ' tweets');
+
+			// keep searching until there are no more pages
 			if (resp.search_metadata.next_results) {
-				queries.push(resp.search_metadata.next_results);
+				searchTwitter(resp.search_metadata.next_results);
 			}
-			next();
+			else {
+				console.log('Done!');
+				process.exit(0);
+			}
 		}, function(err) {
 			bail('Database failed!', err);
 		});
