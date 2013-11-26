@@ -7,16 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express": "3.3.x",
-    "underscore": "1.5.x",
-    "mongoose": "3.6.x",
-    "less-middleware": "0.1.x",
-    "hjs": "2.x.x",
-    "temboo": "1.x.x",
-    "forEachAsync": "~3.0.0-rc1"
-  },
-  "devDependencies": {
-    "frisby": "0.6.x"
+    "express": "*",
+    "factual-api": "*",
+    "json2csv": "*",
+    "mongoose": "*",
+    "request": "*",
+    "twit": "*",
+    "underscore": "*",
+    "winston": "*",
+    "yelp": "*"
   },
   "engines": {
     "node": "0.10.13",
