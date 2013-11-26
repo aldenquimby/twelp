@@ -65,6 +65,18 @@ exports.getLabeledTweets = function(callback, errorCallback) {
 		});
 };
 
+exports.searchTweets = function(searchRegex, callback) {
+	var Tweet = db.model('Tweet');
+	Tweet.find({text: { $regex: searchRegex, $options: 'i' }})
+		 .exec(callback);
+};
+
+exports.deleteTweets = function(searchRegex, callback) {
+	var Tweet = db.model('Tweet');
+	Tweet.remove({text: { $regex: searchRegex, $options: 'i' }})
+		 .exec(callback);
+};
+
 exports.labelTweet = function(id, class_label, callback, errorCallback) {
 	var Tweet = db.model('Tweet');
 	Tweet.findByIdAndUpdate(id, {class_label:class_label}, function(err, updatedTweet) {
