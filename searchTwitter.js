@@ -56,6 +56,8 @@ deserializeQs = function(query) {
     return b;
 };
 
+geocode = '40.6700,-73.9400,13mi';
+
 var searchParam = {
 	q: query || 'poison since:2013-09-01', 
 	count: 100,
