@@ -15,8 +15,9 @@ npm-debug.log
 # dependencies
 node_modules
 
-# private keys
+# private files
 keys.js
+private
 
 # compiled less
 */less/*.css
