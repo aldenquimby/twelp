@@ -1,17 +1,18 @@
 
 var _ = require('underscore');
 var schema = require('./schema');
+var keys = require('../private/keys');
 var mongoose = require('mongoose'),
     db = mongoose.connection;
 
-exports.connect = function(dbUrl, callback, errorCallback) {
+exports.connect = function(callback, errorCallback) {
 	db.on('error', errorCallback);
 	db.once('open', function() {
 		mongoose.model('Tweet', schema.TweetSchema);
 		mongoose.model('ClassifiedTweet', schema.ClassifiedTweetSchema);
 		callback();
 	});
-	mongoose.connect(dbUrl);
+	mongoose.connect(keys.DATABASE_URL);
 };
 
 exports.saveTweets = function(tweets, callback, errorCallback) {

@@ -2,7 +2,7 @@
 // ******** PROCESS *********
 // **************************
 
-var dbUrl = process.env.DATABASE_URL;
+
 
 // **************************
 // ****** DEPENDENCIES ******
@@ -18,9 +18,7 @@ var fs       = require('fs');
 // ********** MAIN **********
 // **************************
 
-dbUrl = dbUrl || require('./keys').DATABASE_URL;
-
-database.connect(dbUrl, function() {
+database.connect(function() {
 	console.log('Opened db connection.');
 
 	database.getLabeledTweets(function(tweets) {

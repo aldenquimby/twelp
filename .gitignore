@@ -16,7 +16,6 @@ npm-debug.log
 node_modules
 
 # private files
-keys.js
 private
 
 # compiled less

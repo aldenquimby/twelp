@@ -2,7 +2,7 @@
 // ******** PROCESS *********
 // **************************
 
-var dbUrl = process.env.DATABASE_URL;
+
 
 // **************************
 // ****** DEPENDENCIES ******
@@ -11,15 +11,14 @@ var dbUrl = process.env.DATABASE_URL;
 var _        = require('underscore');
 var database = require('./api/database');
 var schema   = require('./api/schema');
-var log = require('./log');
+var log      = require('./log');
 
 // **************************
 // ********* LABEL **********
 // **************************
 
 // connect to database
-dbUrl = dbUrl || require('./keys').DATABASE_URL;
-database.connect(dbUrl, function() {
+database.connect(function() {
 	console.log('Opened db connection.');
 
 	database.deleteTweets('bieber+', function(err, tweets) {

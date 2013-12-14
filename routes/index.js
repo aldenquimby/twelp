@@ -1,7 +1,7 @@
 
 var log = require('../log');
 var twitter = require('../api/twitterApi');
-var keys = require('../keys');
+var keys = require('../private/keys');
 var yelp = require("yelp").createClient({
   consumer_key: keys.YELP_CONSUMER_KEY, 
   consumer_secret: keys.YELP_CONSUMER_SECRET,

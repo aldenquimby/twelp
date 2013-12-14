@@ -2,7 +2,7 @@
 // ******** PROCESS *********
 // **************************
 
-var dbUrl = process.env.DATABASE_URL;
+
 
 // **************************
 // ****** DEPENDENCIES ******
@@ -20,8 +20,7 @@ var request  = require('request');
 var classifierUrl = 'http://174.129.228.98/cgi-bin/R/fp_classifier?text=';
 
 // connect to database
-dbUrl = dbUrl || require('./keys').DATABASE_URL;
-database.connect(dbUrl, function() {
+database.connect(function() {
 	console.log('Opened db connection.');
 	database.getUnlabeledTweets(function(tweets) {
 		console.log('Labeling ' + tweets.length + ' tweets.');

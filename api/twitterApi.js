@@ -1,5 +1,5 @@
 
-var keys = require('../keys');
+var keys = require('../private/keys');
 var twit = require('twit');
 var twitter = new twit({
   consumer_key: keys.TWITTER_CONSUMER_KEY,

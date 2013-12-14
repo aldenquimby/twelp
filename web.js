@@ -4,7 +4,6 @@
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 var port = process.env.PORT || 5115;
-var dbUrl = process.env.DATABASE_URL;
 
 // **************************
 // ****** DEPENDENCIES ******
@@ -19,8 +18,7 @@ var database = require('./api/database');
 // ******** DATABASE ********
 // **************************
 
-dbUrl = dbUrl || require('./keys').DATABASE_URL;
-database.connect(dbUrl, function() {
+database.connect(function() {
 	console.log('opened mongo connection');
 }, function(err) {
 	console.log(err);

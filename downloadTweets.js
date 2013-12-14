@@ -2,7 +2,6 @@
 // ******** PROCESS *********
 // **************************
 
-var dbUrl = process.env.DATABASE_URL;
 var query = process.argv.length > 2 ? process.argv[2] : 'food poisoning';
 var city = process.argv.length > 3 ? process.argv[3] : 'NYC';
 
@@ -10,10 +9,10 @@ var city = process.argv.length > 3 ? process.argv[3] : 'NYC';
 // ****** DEPENDENCIES ******
 // **************************
 
-var _            = require('underscore');
-var twitter      = require('./api/twitterApi');
-var database     = require('./api/database');
-var schema       = require('./api/schema');
+var _        = require('underscore');
+var twitter  = require('./api/twitterApi');
+var database = require('./api/database');
+var schema   = require('./api/schema');
 
 // **************************
 // ******** DOWNLOAD ********
@@ -27,9 +26,7 @@ var cities = {
 	CHI: '41.8607,-87.6408,16mi',
 };
 
-dbUrl = dbUrl || require('./keys').DATABASE_URL;
-
-database.connect(dbUrl, function() {
+database.connect(function() {
 	console.log('Opened db connection.');
 
 	database.getMaxTweetId(function(maxId) {
