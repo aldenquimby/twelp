@@ -20,15 +20,17 @@ var log      = require('./log');
 // connect to database
 database.connect(function() {
 	console.log('Opened db connection.');
-	database.getLabeledTweets(function(tweets) {
+	database.getTweetsWithLabel(true, function(err, tweets) {
+		if (err) {
+			bail('Failed to get tweets.', err);
+		}
+
 		tweets = _.filter(tweets, function(x) { return x.class_label == "food_poisoning"; });
 		var texts = _.pluck(tweets, 'text');
 		var allWords = texts.join(' ').replace(/[^\w\s]|_/g, '').match(/\S+/g);
 		var wordCount = _.countBy(allWords, function(x){return x;});
 		var ordered = _.sortBy(_.pairs(wordCount), function(pair) { return pair[1]; });
 		done(ordered);
-	}, function(err) {
-		bail('Failed to get tweets.', err);
 	});
 }, function(err) {
 	bail('Failed to connect to db.', err);

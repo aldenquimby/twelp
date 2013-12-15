@@ -38,7 +38,7 @@ var TweetSchema = new Schema({
     		coordinates: []
     	}
     },
-    class_label: String,
+    class_label: String
 });
 
 TweetSchema.pre('save', function (next) {
@@ -51,10 +51,12 @@ TweetSchema.pre('save', function (next) {
     next();
 });
 
-var ClassifiedTweetSchema = new Schema({
-	tweet: { type: ObjectId, required: true },
-	label: { type: String, required: true },
-    created_at: { type: Date, default: Date.now },
+var YelpBusinessSchema = new Schema({
+    created_at: { type: Date, required: true  },
+    id: { type: String, required: true, index: {unique: true, dropDups: true} },
+    url: { type: String },
+    site: String,
+    twitter: String
 });
 
 exports.createTweetForDb = function(tweet) {
@@ -112,4 +114,5 @@ exports.createTweetForDb = function(tweet) {
 };
 
 exports.TweetSchema = TweetSchema;
-exports.ClassifiedTweetSchema = ClassifiedTweetSchema;
+exports.YelpBusinessSchema = YelpBusinessSchema;
+

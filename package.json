@@ -7,9 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express": "*",
+    "cheerio": "*",
     "factual-api": "*",
     "json2csv": "*",
+    "lazy": "*",
     "mongoose": "*",
     "request": "*",
     "twit": "*",

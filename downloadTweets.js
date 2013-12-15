@@ -29,7 +29,11 @@ var cities = {
 database.connect(function() {
 	console.log('Opened db connection.');
 
-	database.getMaxTweetId(function(maxId) {
+	database.getMaxTweetId(function(err, maxId) {
+		if (err) {
+			bail('Database failed!', err);
+		}
+
 		console.log('Got max tweet id: ' + maxId);
 
 		// if we have a max id, this will search for all tweets since it
@@ -47,8 +51,6 @@ database.connect(function() {
 
 		searchTwitter(serializeQs(searchParam));
 
-	}, function(err) {
-		bail('Database failed!', err);
 	});
 
 }, function(err) {
@@ -65,7 +67,11 @@ searchTwitter = function(query) {
 		var tweets = _.map(resp.statuses, schema.createTweetForDb);
 		console.log('Got ' + tweets.length + ' tweets');
 		
-		database.saveTweets(tweets, function(createdTweets) {
+		database.saveTweets(tweets, function(err, createdTweets) {
+			if (err) {
+				bail('Database failed!', err);
+			}
+
 			console.log('Saved ' + createdTweets.length + ' tweets');
 
 			// keep searching until there are no more pages
@@ -76,8 +82,6 @@ searchTwitter = function(query) {
 				console.log('Done!');
 				process.exit(0);
 			}
-		}, function(err) {
-			bail('Database failed!', err);
 		});
 	});
 };

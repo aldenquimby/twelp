@@ -2,7 +2,6 @@
 // ******** PROCESS *********
 // **************************
 
-var dbUrl = process.env.DATABASE_URL;
 var query = process.argv.length > 2 ? process.argv[2] : 'food poisoning';
 var city = process.argv.length > 3 ? process.argv[3] : 'NYC';
 
@@ -10,9 +9,9 @@ var city = process.argv.length > 3 ? process.argv[3] : 'NYC';
 // ****** DEPENDENCIES ******
 // **************************
 
-var _ = require('underscore');
+var _       = require('underscore');
 var Factual = require('factual-api');
-var keys = require('./private/keys');
+var keys    = require('./private/keys');
 var factual = new Factual(keys.FACTUAL_KEY, keys.FACTUAL_SECRET);
 
 // **************************

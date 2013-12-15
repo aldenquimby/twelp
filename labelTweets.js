@@ -22,11 +22,12 @@ var classifierUrl = 'http://174.129.228.98/cgi-bin/R/fp_classifier?text=';
 // connect to database
 database.connect(function() {
 	console.log('Opened db connection.');
-	database.getUnlabeledTweets(function(tweets) {
+	database.getTweetsWithLabel(false, function(err, tweets) {
+		if (err) {
+			bail('Failed to get tweets.', err);
+		}
 		console.log('Labeling ' + tweets.length + ' tweets.');
 		label(tweets);
-	}, function(err) {
-		bail('Failed to get tweets.', err);
 	});
 }, function(err) {
 	bail('Failed to connect to db.', err);
@@ -46,11 +47,12 @@ label = function(tweets) {
 		}
 		var databaseId = tweet['_id'];
 		var class_label = body.replace(/\s+/g, '');
-		database.labelTweet(databaseId, class_label, function(updatedTweet) {
+		database.labelTweet(databaseId, class_label, function(err, updatedTweet) {
+			if (err) {
+				bail('Failed to save tweet.', err);
+			}
 			console.log('Updated label to ' + updatedTweet.class_label);
 			label(_.rest(tweets));
-		}, function(err) {
-			bail('Failed to save tweet.', err);
 		});
 	});
 };

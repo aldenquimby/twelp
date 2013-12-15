@@ -25,16 +25,8 @@ database.connect(function() {
 		if (err) {
 			bail('Failed to get tweets.', err);
 		}
-
 		console.log(tweets);
 		done(tweets.length);
-
-		tweets = _.filter(tweets, function(x) { return x.class_label == "food_poisoning"; });
-		var texts = _.pluck(tweets, 'text');
-		var allWords = texts.join(' ').replace(/[^\w\s]|_/g, '').match(/\S+/g);
-		var wordCount = _.countBy(allWords, function(x){return x;});
-		var ordered = _.sortBy(_.pairs(wordCount), function(pair) { return pair[1]; });
-		done(ordered);
 	});
 
 }, function(err) {
@@ -51,4 +43,3 @@ done = function(msg) {
 	console.log(msg);
 	process.exit(0);
 };
-
