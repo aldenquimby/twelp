@@ -1,18 +1,19 @@
 // **************************
-// ******** PROCESS *********
-// **************************
-
-var query = process.argv.length > 2 ? process.argv[2] : 'food poisoning';
-var city = process.argv.length > 3 ? process.argv[3] : 'NYC';
-
-// **************************
 // ****** DEPENDENCIES ******
 // **************************
 
 var _        = require('underscore');
 var twitter  = require('./api/twitterApi');
 var database = require('./api/database');
-var schema   = require('./api/schema');
+
+// **************************
+// ******** PROCESS *********
+// **************************
+
+var queries = _.rest(process.argv, 2);
+if (queries.length == 0) {
+	queries = ['#foodpoisoning OR #sick OR #stomachache', '"food poisoning"', 'stomach', 'sick', 'vomit', 'puke', 'diarrhea', 'ill', '"the runs"'];
+}
 
 // **************************
 // ******** DOWNLOAD ********
@@ -34,57 +35,50 @@ database.connect(function() {
 			bail('Database failed!', err);
 		}
 
-		console.log('Got max tweet id: ' + maxId);
-
 		// if we have a max id, this will search for all tweets since it
 		// otherwise it will get all tweets in the past week, because
 		// the search API only returns tweets from the past week
-		var searchParam = {
-			q: query, 
-			count: 100,
-			lang: 'en',
-			result_type: 'recent',
-			geocode: cities[city],
-			include_entities: 1,
-			since_id: maxId
-		};
+		console.log('Got max tweet id: ' + maxId);
 
-		searchTwitter(serializeQs(searchParam));
+		var allTweets = {};
 
+		_.each(queries, function(query) {
+
+			var searchParam = {
+				q: query, 
+				count: 100,
+				lang: 'en',
+				result_type: 'recent',
+				geocode: cities['NYC'],
+				include_entities: 1,
+				since_id: maxId
+			};
+
+			// kick off search
+			twitter.search(serializeQs(searchParam), function(err, tweets) {
+				if (err) {
+					bail('Twitter API failed!', err);
+				}
+
+				console.log(tweets.length + ' tweets from \'' + query + '\'');
+				var newTweets = _.filter(tweets, function(tweet) {
+					var isNew = !allTweets[tweet.id];
+					allTweets[tweet.id] = tweet;
+					return isNew;
+				});
+				database.saveTweets(newTweets, function(err2, createdTweets) {
+					if (err2) {
+						bail('Database failed!', err2);
+					}
+					console.log('Saved ' + createdTweets.length + ' tweets');
+				});
+			});
+		});
 	});
 
 }, function(err) {
 	bail('mongo connection failed', err);
 });
-
-searchTwitter = function(query) {
-	var param = deserializeQs(query);
-	twitter.searchWithParam(param, function(err, resp) {
-		if (err) {
-			bail('Twitter API failed!', err);
-		}
-
-		var tweets = _.map(resp.statuses, schema.createTweetForDb);
-		console.log('Got ' + tweets.length + ' tweets');
-		
-		database.saveTweets(tweets, function(err, createdTweets) {
-			if (err) {
-				bail('Database failed!', err);
-			}
-
-			console.log('Saved ' + createdTweets.length + ' tweets');
-
-			// keep searching until there are no more pages
-			if (resp.search_metadata.next_results) {
-				searchTwitter(resp.search_metadata.next_results);
-			}
-			else {
-				console.log('Done!');
-				process.exit(0);
-			}
-		});
-	});
-};
 
 bail = function(msg, err) {
 	console.log(msg);
@@ -97,20 +91,4 @@ serializeQs = function(obj) {
   for(var p in obj)
      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
   return str.join("&");
-};
-
-deserializeQs = function(query) {
-	if (query[0] == '?') {
-		query = query.substr(1);
-	}
-	a = query.split('&');
-    if (a == "") return {};
-    var b = {};
-    for (var i = 0; i < a.length; ++i)
-    {
-        var p=a[i].split('=');
-        if (p.length != 2) continue;
-        b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
-    }
-    return b;
 };

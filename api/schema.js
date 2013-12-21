@@ -27,28 +27,22 @@ var TweetSchema = new Schema({
     	name: String
     }],
     coordinates: { 
-    	type: { type: String }, 
+    	type: String, 
     	coordinates: []
     },
     place: {
     	id: String,
-    	full_name: String,
+    	full_name: String  ,
     	bounding_box: {
-	    	type: { type: String }, 
+	    	type: String, 
     		coordinates: []
     	}
     },
     class_label: String
 });
 
-TweetSchema.pre('save', function (next) {
-    if(this.coordinates.coordinates.length == 0){
-        this.coordinates = undefined;
-    }
-    if(this.place.bounding_box.coordinates.length == 0){ 
-        this.place = undefined;
-    }
-    next();
+TweetSchema.add({
+    conversation : [TweetSchema]
 });
 
 var YelpBusinessSchema = new Schema({
@@ -60,7 +54,7 @@ var YelpBusinessSchema = new Schema({
 });
 
 exports.createTweetForDb = function(tweet) {
-    var in_reply_to = null;
+    var in_reply_to = undefined;
     if (tweet.in_reply_to_status_id) {
         in_reply_to = {
             screen_name: tweet.in_reply_to_screen_name,
@@ -89,8 +83,8 @@ exports.createTweetForDb = function(tweet) {
         };
     });
 
-    var place = null;
-    if (tweet.place) {
+    var place = undefined;
+    if (tweet.place && tweet.place.bounding_box.coordinates.length > 0) {
         place = {
             id: tweet.place.id,
             full_name: tweet.place.full_name,
@@ -98,18 +92,27 @@ exports.createTweetForDb = function(tweet) {
         };
     }
 
+    var coordinates = undefined;
+    if (tweet.coordinates && tweet.coordinates.coordinates.length > 0) {
+        coordinates = tweet.coordinates;
+    }
+
+    // deal with any special twitter text encodings here
+    var cleanText = tweet.text
+                         .replace("&amp;", "&");
+
     return {
         created_at: tweet.created_at,
         id: tweet.id_str,
-        text: tweet.text,
+        text: cleanText,
         user: user,
         in_reply_to: in_reply_to,
         hashtags: hashtags,
         symbols: symbols,
         urls: urls,
         user_mentions: user_mentions,
-        coordinates: tweet.coordinates,
-        place: place,
+        coordinates: coordinates,
+        place: place
     };
 };
 

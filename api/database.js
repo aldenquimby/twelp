@@ -39,6 +39,36 @@ exports.getTweetsWithLabel = function(labelExists, callback) {
 		 .exec(callback);
 };
 
+exports.getConvoTweets = function(callback) {
+	tweetModel()
+		.find({in_reply_to: {$exists: true}})
+		.exec(function(err, tweets) {
+
+			if (err) {
+				return callback(err);
+			}
+
+			var tweetIds = _.pluck(_.pluck(tweets, 'in_reply_to'), 'status_id');
+
+			tweetModel()
+				.find({id: {$in: tweetIds}})
+				.exec(function(err2, tweets2) {
+
+					if (err2) {
+						return callback(err2);
+					}
+
+					var ids = _.indexBy(tweets2, 'id');
+
+					var dont_have = _.filter(tweets, function(tweet) {
+						return !ids[tweet.in_reply_to.status_id];
+					});
+
+					return callback(null, dont_have);
+				});
+		});
+};
+
 exports.searchTweets = function(searchRegex, callback) {
 	tweetModel().find({text: { $regex: searchRegex, $options: 'i' }})
 		 .exec(callback);
