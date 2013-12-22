@@ -5,6 +5,7 @@
 var twitter  = require('./api/twitterApi');
 var database = require('./api/database');
 var _        = require('underscore');
+var schema   = require('./api/schema');
 
 // **************************
 // ******** PROGRAM ********
@@ -14,28 +15,31 @@ database.connect(function() {
 	console.log('Opened db connection.');
 
 	database.getConvoTweets(function(err, tweets) {
-		console.log('TOTAL: ' + tweets.length);
+		if (err) {
+			bail('Getting convo tweets failed', err);
+		}
+
+		console.log('CONVO TWEETS: ' + tweets.length);
 
 		if (tweets.length == 0) {
 			done();
 		}
 
-		var first = tweets[0];
+		_.each(_.first(tweets, 50), function(first) {
 
-		twitter.trackConversionBack(first, function(err, convo) {
-			if (err) {
-				bail('Convo tracking failed', err);
-			}
-
-			first.conversation = 
-
-			database.saveTweets(convo, function(err, created) {
-				if (err) {
-					bail('Saving convo failed', err);
+			twitter.trackConversionBack(first, function(err2, convo) {
+				if (err2) {
+					bail('Convo tracking failed', err2);
 				}
-				console.log('Saved convo: ' + created.length);
-				done();
+
+				database.updateTweet(first['_id'], {conversation: convo}, function(err3, updated) {
+					if (err3) {
+						bail('Saving convo failed', err3);
+					}
+					console.log('Saved convo length ' + convo.length + ' for ' + first['_id']);
+				});
 			});
+
 		});
 	});
 

@@ -47,11 +47,11 @@ label = function(tweets) {
 		}
 		var databaseId = tweet['_id'];
 		var class_label = body.replace(/\s+/g, '');
-		database.labelTweet(databaseId, class_label, function(err, updatedTweet) {
+		database.updateTweet(databaseId, {class_label:class_label}, function(err, updated) {
 			if (err) {
 				bail('Failed to save tweet.', err);
 			}
-			console.log('Updated label to ' + updatedTweet.class_label);
+			console.log('Updated label to ' + updated.class_label);
 			label(_.rest(tweets));
 		});
 	});

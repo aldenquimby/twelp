@@ -11,7 +11,7 @@
 var _        = require('underscore');
 var database = require('./api/database');
 var schema   = require('./api/schema');
-var log      = require('./log');
+var log      = require('./util/log');
 
 // **************************
 // ********* LABEL **********

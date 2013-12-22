@@ -11,13 +11,12 @@
 var _        = require('underscore');
 var database = require('./api/database');
 var schema   = require('./api/schema');
-var log      = require('./log');
+var log      = require('./util/log');
 
 // **************************
 // ********* LABEL **********
 // **************************
 
-// connect to database
 database.connect(function() {
 	console.log('Opened db connection.');
 	database.getTweetsWithLabel(true, function(err, tweets) {

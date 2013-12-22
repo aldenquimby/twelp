@@ -34,44 +34,33 @@ exports.getMaxTweetId = function(callback) {
 		});
 };
 
+exports.findTweets = function(search, callback) {
+	tweetModel().find(search).exec(callback);
+};
+
+exports.getTweetsWithUsers = function(users, callback) {
+    exports.findTweets({
+    	"user_mentions": { "$elemMatch": { "screen_name": { "$in": users } } }
+    }, callback);
+};
+
 exports.getTweetsWithLabel = function(labelExists, callback) {
-	tweetModel().find({class_label: {$exists: labelExists}})
-		 .exec(callback);
+    exports.findTweets({
+		class_label: {$exists: labelExists}
+    }, callback);
 };
 
 exports.getConvoTweets = function(callback) {
-	tweetModel()
-		.find({in_reply_to: {$exists: true}})
-		.exec(function(err, tweets) {
-
-			if (err) {
-				return callback(err);
-			}
-
-			var tweetIds = _.pluck(_.pluck(tweets, 'in_reply_to'), 'status_id');
-
-			tweetModel()
-				.find({id: {$in: tweetIds}})
-				.exec(function(err2, tweets2) {
-
-					if (err2) {
-						return callback(err2);
-					}
-
-					var ids = _.indexBy(tweets2, 'id');
-
-					var dont_have = _.filter(tweets, function(tweet) {
-						return !ids[tweet.in_reply_to.status_id];
-					});
-
-					return callback(null, dont_have);
-				});
-		});
+	exports.findTweets({
+		in_reply_to: { $exists: true },
+		conversation: { $exists: false }
+	}, callback);	
 };
 
 exports.searchTweets = function(searchRegex, callback) {
-	tweetModel().find({text: { $regex: searchRegex, $options: 'i' }})
-		 .exec(callback);
+	exports.findTweets({
+		text: { $regex: searchRegex, $options: 'i' }
+	}, callback);
 };
 
 exports.deleteTweets = function(searchRegex, callback) {
@@ -79,10 +68,9 @@ exports.deleteTweets = function(searchRegex, callback) {
 		 .exec(callback);
 };
 
-exports.labelTweet = function(id, class_label, callback) {
-	tweetModel().findByIdAndUpdate(id, {class_label:class_label}, 
-									callback);
-};
+exports.updateTweet = function(id, update, callback) {
+	tweetModel().findByIdAndUpdate(id, update, callback);
+}
 
 exports.saveYelpBusinesses = function(yelpBizs, callback) {
 	yelpBizModel().create(yelpBizs, function (err) {
@@ -98,4 +86,4 @@ exports.upsertYelpBusiness = function(yelpBiz, callback) {
 
 exports.getYelpBusinesses = function(callback) {
     yelpBizModel().find({}, callback);
-}
+};

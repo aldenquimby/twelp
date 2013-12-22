@@ -12,7 +12,7 @@ var database = require('./api/database');
 
 var queries = _.rest(process.argv, 2);
 if (queries.length == 0) {
-	queries = ['#foodpoisoning OR #sick OR #stomachache', '"food poisoning"', 'stomach', 'sick', 'vomit', 'puke', 'diarrhea', 'ill', '"the runs"'];
+	queries = ['#foodpoisoning OR #sick OR #stomachache', '"food poison"', '"food poisoning"', 'stomach', 'sick', 'vomit', 'puke', 'diarrhea', 'ill', '"the runs"'];
 }
 
 // **************************

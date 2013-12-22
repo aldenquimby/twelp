@@ -4,7 +4,7 @@
 
 var _       = require('underscore');
 var twitter = require('./api/twitterApi');
-var logger  = require('./log').getFileLogger('poison-search');
+var logger  = require('./util/log').getFileLogger('poison-search');
 
 // **************************
 // ******** PROCESS *********

@@ -9,6 +9,27 @@ var database = require('../api/database');
 // ******** PROGRAM ********
 // **************************
 
+var getUseableMap = function(bizs) {
+	
+	var withTwitter = _.filter(bizs, function(biz) {
+		return biz.twitter;
+	});
+
+	var seenTwitter = {};
+	var bizByTwitter = {};
+
+	_.each(withTwitter, function(biz) {
+		if (seenTwitter[biz.twitter]) {
+			bizByTwitter[biz.twitter] = undefined;
+		} else {
+			seenTwitter[biz.twitter] = true;
+			bizByTwitter[biz.twitter] = biz.id;
+		}
+	});
+
+	return bizByTwitter;
+};
+
 exports.analyzeTwelpMap = function(callback) {
 	database.connect(function() {
 		database.getYelpBusinesses(function(err, bizs) {
@@ -49,3 +70,19 @@ exports.analyzeTwelpMap = function(callback) {
 	}, callback);
 };
 
+exports.findTweets = function(callback) {
+	database.connect(function() {
+		database.getYelpBusinesses(function(err, bizs) {
+			if (err) {
+				return callback(err);
+			}
+
+			var map = getUseableMap(bizs);
+
+			// console.log(JSON.stringify(map, null, 2));
+
+			database.getTweetsWithUsers(_.keys(map), callback);
+		});
+
+	}, callback);
+};

@@ -38,7 +38,12 @@ var TweetSchema = new Schema({
     		coordinates: []
     	}
     },
-    class_label: String
+    class_label: String,
+    classification: [{
+        score: Number,
+        classifier: String,
+        date: Date
+    }]
 });
 
 TweetSchema.add({
@@ -54,15 +59,7 @@ var YelpBusinessSchema = new Schema({
 });
 
 exports.createTweetForDb = function(tweet) {
-    var in_reply_to = undefined;
-    if (tweet.in_reply_to_status_id) {
-        in_reply_to = {
-            screen_name: tweet.in_reply_to_screen_name,
-            status_id: tweet.in_reply_to_status_id_str,
-            user_id: tweet.in_reply_to_user_id_str
-        };
-    }
-
+   
     var user = {
         id: tweet.user.id_str,
         screen_name: tweet.user.screen_name, 
@@ -95,6 +92,15 @@ exports.createTweetForDb = function(tweet) {
     var coordinates = undefined;
     if (tweet.coordinates && tweet.coordinates.coordinates.length > 0) {
         coordinates = tweet.coordinates;
+    }
+ 
+    var in_reply_to = undefined;
+    if (tweet.in_reply_to_status_id) {
+        in_reply_to = {
+            screen_name: tweet.in_reply_to_screen_name,
+            status_id: tweet.in_reply_to_status_id_str,
+            user_id: tweet.in_reply_to_user_id_str
+        };
     }
 
     // deal with any special twitter text encodings here

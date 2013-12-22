@@ -66,7 +66,8 @@ var trackConversionImpl = function(fromTweet, callback, tweets) {
 
 	twitter.get('/statuses/show/' + fromTweet.in_reply_to.status_id, function(err, status) {
 		if (err) {
-			if (err.statusCode == 404) {
+			// 404 if user deleted tweet, 403 if tweet is private
+			if (err.statusCode == 404 || err.statusCode == 403) {
 				return callback(null, tweets);
 			}
 			else {
@@ -84,3 +85,5 @@ exports.trackConversionBack = function(fromTweet, callback) {
 
 	return trackConversionImpl(fromTweet, callback, []);
 };
+
+
