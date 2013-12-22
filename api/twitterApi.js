@@ -60,7 +60,13 @@ exports.startStream = function(filterParam, onTweetCallback) {
 
 var trackConversionImpl = function(fromTweet, callback, tweets) {
 
+	// stop if end of convo
 	if (!fromTweet.in_reply_to) {
+		return callback(null, tweets);
+	}
+
+	// stop if 10 tweets in convo
+	if (tweets.length >= 10) {
 		return callback(null, tweets);
 	}
 
