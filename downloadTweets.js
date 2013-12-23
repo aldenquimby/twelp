@@ -5,6 +5,7 @@
 var _        = require('underscore');
 var twitter  = require('./api/twitterApi');
 var database = require('./api/database');
+var lazy     = require('lazy');
 
 // **************************
 // ******** PROCESS *********
@@ -12,7 +13,7 @@ var database = require('./api/database');
 
 var queries = _.rest(process.argv, 2);
 if (queries.length == 0) {
-	queries = ['#foodpoisoning OR #sick OR #stomachache', '"food poison"', '"food poisoning"', 'stomach', 'sick', 'vomit', 'puke', 'diarrhea', 'ill', '"the runs"'];
+	queries = ['#foodpoisoning OR #stomachache', '"food poison"', '"food poisoning"', 'stomach', 'vomit', 'puke', 'diarrhea', '"the runs"'];
 }
 
 // **************************
@@ -25,6 +26,38 @@ var cities = {
 	LA:  '33.9999,-118.392,23mi',
 	BOS: '42.3281,-71.0644,7mi',
 	CHI: '41.8607,-87.6408,16mi',
+};
+
+var searchQueries = function (maxId, queries, allTweets, callback) {
+
+	if (queries.length == 0) {
+		return callback(null, allTweets);
+	}
+
+	var query = _.first(queries);
+
+	var searchParam = {
+		q: query, 
+		count: 100,
+		lang: 'en',
+		result_type: 'recent',
+		geocode: cities['NYC'],
+		include_entities: 1,
+		since_id: maxId
+	};
+
+	twitter.search(serializeQs(searchParam), function(err, tweets) {
+		if (err) {
+			return callback(err);
+		}
+
+		console.log(tweets.length + ' tweets from \'' + query + '\'');
+		_.each(tweets, function (tweet) {
+			allTweets[tweet.id] = tweet;
+		});
+
+		searchQueries(maxId, _.rest(queries), allTweets, callback);
+	});
 };
 
 database.connect(function() {
@@ -40,38 +73,19 @@ database.connect(function() {
 		// the search API only returns tweets from the past week
 		console.log('Got max tweet id: ' + maxId);
 
-		var allTweets = {};
+		searchQueries(maxId, queries, {}, function(err2, tweets) {
+			if (err2) {
+				bail('Twitter API failed', err2);
+			}
 
-		_.each(queries, function(query) {
+			tweets = _.values(tweets);
 
-			var searchParam = {
-				q: query, 
-				count: 100,
-				lang: 'en',
-				result_type: 'recent',
-				geocode: cities['NYC'],
-				include_entities: 1,
-				since_id: maxId
-			};
-
-			// kick off search
-			twitter.search(serializeQs(searchParam), function(err, tweets) {
-				if (err) {
-					bail('Twitter API failed!', err);
+			database.saveTweets(tweets, function(err3, createdTweets) {
+				if (err3) {
+					bail('Database failed!', err3);
 				}
-
-				console.log(tweets.length + ' tweets from \'' + query + '\'');
-				var newTweets = _.filter(tweets, function(tweet) {
-					var isNew = !allTweets[tweet.id];
-					allTweets[tweet.id] = tweet;
-					return isNew;
-				});
-				database.saveTweets(newTweets, function(err2, createdTweets) {
-					if (err2) {
-						bail('Database failed!', err2);
-					}
-					console.log('Saved ' + createdTweets.length + ' tweets');
-				});
+				console.log('Saved ' + createdTweets.length + ' tweets');
+				process.exit(0);
 			});
 		});
 	});

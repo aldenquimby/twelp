@@ -23,7 +23,7 @@ var outputFile = './logs/csv/test.csv';
 database.connect(function() {
 	console.log('Opened db connection.');
 
-	database.getTweetsWithLabel(true, function(err, tweets) {
+	database.findTweets({}, function(err, tweets) {
 		if (err) {
 			bail('Failed to get tweets.', err);
 		}

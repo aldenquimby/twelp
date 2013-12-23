@@ -118,7 +118,8 @@ exports.createTweetForDb = function(tweet) {
         urls: urls,
         user_mentions: user_mentions,
         coordinates: coordinates,
-        place: place
+        place: place,
+        conversation: undefined
     };
 };
 
