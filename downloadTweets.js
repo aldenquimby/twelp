@@ -28,8 +28,7 @@ var cities = {
 	CHI: '41.8607,-87.6408,16mi',
 };
 
-var searchQueries = function (maxId, queries, allTweets, callback) {
-
+var searchQueriesImpl = function (maxId, queries, allTweets, callback) {
 	if (queries.length == 0) {
 		return callback(null, allTweets);
 	}
@@ -56,7 +55,24 @@ var searchQueries = function (maxId, queries, allTweets, callback) {
 			allTweets[tweet.id] = tweet;
 		});
 
-		searchQueries(maxId, _.rest(queries), allTweets, callback);
+		searchQueriesImpl(maxId, _.rest(queries), allTweets, callback);
+	});
+};
+
+var searchQueries = function (maxId, queries, callback) {
+	searchQueriesImpl(maxId, queries, {}, function(err, tweets) {
+		if (err) {
+			callback(err);
+		}
+		var validTweets = _.filter(_.values(tweets), function(tweet) {
+			if (tweet.id <= maxId) {
+				console.log("WOAH ID BEFORE MAX!");
+				console.log(tweet);
+			}
+
+			return tweet.id > maxId;
+		});
+		callback(null, validTweets);
 	});
 };
 
@@ -73,12 +89,10 @@ database.connect(function() {
 		// the search API only returns tweets from the past week
 		console.log('Got max tweet id: ' + maxId);
 
-		searchQueries(maxId, queries, {}, function(err2, tweets) {
+		searchQueries(maxId, queries, function(err2, tweets) {
 			if (err2) {
 				bail('Twitter API failed', err2);
 			}
-
-			tweets = _.values(tweets);
 
 			database.saveTweets(tweets, function(err3, createdTweets) {
 				if (err3) {
