@@ -1,11 +1,11 @@
 
 exports.bail = function(msg, err) {
-	console.log(msg);
-	console.log(err);
+	if (msg) console.log(msg);
+	if (err) console.log(err);
 	process.exit(1);
 };
 
 exports.done = function(msg) {
-	console.log(msg);
+	if (msg) console.log(msg);
 	process.exit(0);
 };

@@ -4,6 +4,7 @@
 
 var tm = require('./analysis/twelpMap');
 var twitter = require('./api/twitterApi'); 
+var proc = require('./util/processUtil'); 
 var _        = require('underscore');
 var database = require('./api/database'); 
 var lazy     = require("lazy");
@@ -13,24 +14,29 @@ var fs       = require("fs");
 // ******** PROGRAM ********
 // **************************
 
-var bail = function(msg, err) {
-	console.log(msg);
-	console.log(err);
-	process.exit(1);
-};
+var fromFile = './private/tweets.json';
 
-var done = function(msg) {
-	console.log(msg || 'DONE');
-	process.exit(0);
-};
+new lazy(fs.createReadStream(fromFile))
+.lines
+.map(function(line) { return line.toString(); })
+.forEach(function(line) {
+	var tweet = JSON.parse(line.toString());
+	if (tweet.coordinates && tweet.coordinates.coordinates && tweet.coordinates.coordinates.length > 0) {
+		console.log(JSON.stringify(tweet.coordinates.coordinates));
+	}
+})
+.join(function() {
+	proc.done('DONE');
+});
 
+return;
 // count number of foursquare checkins
 database.connect(function() {
 	console.log('Opened db connection.');
 
 	database.findTweets({}, function(err, tweets) {
 		if (err) {
-			bail('Failed to find tweets', err);
+			proc.bail('Failed to find tweets', err);
 		}
 
 		var matchingTweets = _.filter(tweets, function(tweet) {
@@ -39,12 +45,12 @@ database.connect(function() {
 			});
 		});
 
-		console.log(matchingTweets);
-		done();
+		console.log(matchingTweets.length);
+		proc.done();
 	});
 
 }, function(err) {
-	bail('Failed to connect to db.', err);
+	proc.bail('Failed to connect to db.', err);
 });
 return;
 
@@ -64,7 +70,7 @@ return;
 // analyze twelp
 tm.analyzeTwelpMap(function(err, res) {
 	if (err) {
-		bail('', err);
+		proc.bail('', err);
 	}
 
 	console.log('TOTAL BIZS   : ' + res.bizs);
@@ -73,6 +79,6 @@ tm.analyzeTwelpMap(function(err, res) {
 	console.log('TWITTER DUPS : ' + res.dupUsernames);
 	console.log('GOOD TWITTER : ' + res.goodUsernames);
 
-	done();
+	proc.done();
 });
 return;
