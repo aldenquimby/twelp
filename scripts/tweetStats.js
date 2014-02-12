@@ -4,6 +4,7 @@
 
 var _        = require('underscore');
 var database = require('../api/database');
+var proc     = require('../util/processUtil');
 
 // **************************
 // ********** MAIN **********
@@ -24,12 +25,11 @@ function getWeek(d) {
     return d.getFullYear() + '' + weekNo;
 }
 
-database.connect(function() {
-	console.log('Opened db connection.');
+database.runWithConn(function() {
 
 	database.findTweets({}, function(err, tweets) {
 		if (err) {
-			bail('Failed to get tweets.', err);
+			proc.bail('Failed to get tweets.', err);
 		}
 
 		// TWEETS PER WEEK
@@ -49,16 +49,7 @@ database.connect(function() {
 		console.log('CONVERSATION TWEETS');
 		console.log(uniqueTweets.length);
 
-
-		process.exit(0);
+		proc.done();
 	});
 
-}, function(err) {
-	bail('mongo connection failed', err);
 });
-
-bail = function(msg, err) {
-	console.log(msg);
-	console.log(err);
-	process.exit(1);
-};

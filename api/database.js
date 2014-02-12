@@ -1,6 +1,7 @@
 
 var _ = require('underscore');
 var schema = require('./schema');
+var proc = require('../util/processUtil');
 var keys = require('../private/keys');
 var mongoose = require('mongoose'),
     db = mongoose.connection;
@@ -16,6 +17,15 @@ exports.connect = function(callback, errorCallback) {
 		callback();
 	});
 	mongoose.connect(keys.DATABASE_URL);
+};
+
+exports.runWithConn = function(callback) {
+	exports.connect(function() {
+		console.log('Opened db connection.');
+		callback();
+	}, function(err) {
+		proc.bail('Failed to connect to db.', err);
+	});
 };
 
 exports.saveTweets = function(tweets, callback) {
@@ -70,7 +80,7 @@ exports.deleteTweets = function(searchRegex, callback) {
 
 exports.updateTweet = function(id, update, callback) {
 	tweetModel().findByIdAndUpdate(id, update, callback);
-}
+};
 
 exports.saveYelpBusinesses = function(yelpBizs, callback) {
 	yelpBizModel().create(yelpBizs, function (err) {

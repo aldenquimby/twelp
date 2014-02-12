@@ -4,23 +4,17 @@
 
 var _        = require('underscore');
 var database = require('../api/database'); 
+var proc     = require('../util/processUtil');
 
 // **************************
 // ******** PROGRAM ********
 // **************************
 
-var bail = function(msg, err) {
-	console.log(msg);
-	console.log(err);
-	process.exit(1);
-};
-
-database.connect(function() {
-	console.log('Opened db connection.');
+database.runWithConn(function() {
 
 	database.findTweets({}, function(err, tweets) {
 		if (err) {
-			bail('Failed to find tweets', err);
+			proc.bail('Failed to find tweets', err);
 		}
 
 		_.each(tweets, function(tweet) {
@@ -49,7 +43,7 @@ database.connect(function() {
 			if (!_.isEmpty(unset)) {
 				database.updateTweet(tweet['_id'], {'$unset': unset}, function(err2, updated) {
 					if (err2) {
-						bail('Updating tweet failed.', err2);
+						proc.bail('Updating tweet failed.', err2);
 					}
 					console.log('Updated ' + tweet['_id']);
 				});
@@ -58,6 +52,4 @@ database.connect(function() {
 		});
 	});
 
-}, function(err) {
-	bail('Failed to connect to db.', err);
 });

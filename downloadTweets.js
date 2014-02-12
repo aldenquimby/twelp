@@ -3,6 +3,7 @@
 // **************************
 
 var _        = require('underscore');
+var proc     = require('./util/processUtil');
 var twitter  = require('./api/twitterApi');
 var database = require('./api/database');
 var lazy     = require('lazy');
@@ -66,22 +67,18 @@ var searchQueries = function (maxId, queries, callback) {
 		}
 		var validTweets = _.filter(_.values(tweets), function(tweet) {
 			if (tweet.id <= maxId) {
-				console.log("WOAH ID BEFORE MAX!");
-				console.log(tweet);
+				console.log("WOAH " + tweet.id " IS BEFORE MAX " + maxId);
 			}
-
 			return tweet.id > maxId;
 		});
 		callback(null, validTweets);
 	});
 };
 
-database.connect(function() {
-	console.log('Opened db connection.');
-
+database.runWithConn(function() {
 	database.getMaxTweetId(function(err, maxId) {
 		if (err) {
-			bail('Database failed!', err);
+			proc.bail('Database failed!', err);
 		}
 
 		// if we have a max id, this will search for all tweets since it
@@ -91,28 +88,25 @@ database.connect(function() {
 
 		searchQueries(maxId, queries, function(err2, tweets) {
 			if (err2) {
-				bail('Twitter API failed', err2);
+				proc.bail('Twitter API failed', err2);
 			}
 
-			database.saveTweets(tweets, function(err3, createdTweets) {
+			console.log('Search returned ' + tweets.length + ' tweets');
+
+			var tweetsToSave = _.filter(tweets, function(tweet) {
+				return tweet.indexOf('RT ') != 0;
+			});
+
+			database.saveTweets(tweetsToSave, function(err3, createdTweets) {
 				if (err3) {
-					bail('Database failed!', err3);
+					proc.bail('Database failed!', err3);
 				}
 				console.log('Saved ' + createdTweets.length + ' tweets');
 				process.exit(0);
 			});
 		});
 	});
-
-}, function(err) {
-	bail('mongo connection failed', err);
 });
-
-bail = function(msg, err) {
-	console.log(msg);
-	console.log(err);
-	process.exit(1);
-};
 
 serializeQs = function(obj) {
   var str = [];

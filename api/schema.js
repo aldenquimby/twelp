@@ -43,7 +43,8 @@ var TweetSchema = new Schema({
         score: Number,
         classifier: String,
         date: Date
-    }]
+    }],
+    tags: [String]
 });
 
 TweetSchema.add({
@@ -119,7 +120,8 @@ exports.createTweetForDb = function(tweet) {
         user_mentions: user_mentions,
         coordinates: coordinates,
         place: place,
-        conversation: undefined
+        conversation: undefined,
+        tags: undefined
     };
 };
 

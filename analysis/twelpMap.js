@@ -86,3 +86,15 @@ exports.findTweets = function(callback) {
 
 	}, callback);
 };
+
+exports.getAllResetaurantUsers = function(callback) {
+	database.getYelpBusinesses(function(err, bizs) {
+		if (err) {
+			return callback(err);
+		}
+
+		var map = getUseableMap(bizs);
+
+		callback(_.keys(map));
+	});
+};
