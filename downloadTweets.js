@@ -14,7 +14,7 @@ var lazy     = require('lazy');
 
 var queries = _.rest(process.argv, 2);
 if (queries.length == 0) {
-	queries = ['#foodpoisoning OR #stomachache', '"food poison"', '"food poisoning"', 'stomach', 'vomit', 'puke', 'diarrhea', '"the runs"'];
+	queries = ['#foodpoisoning', '#stomachache', '"food poison"', '"food poisoning"', 'stomach', 'vomit', 'puke', 'diarrhea', '"the runs"'];
 }
 
 // **************************
@@ -54,6 +54,7 @@ var searchQueriesImpl = function (maxId, queries, allTweets, callback) {
 		console.log(tweets.length + ' tweets from \'' + query + '\'');
 		_.each(tweets, function (tweet) {
 			allTweets[tweet.id] = tweet;
+			tweet.tags = _.union(tweet.tags, [query]);
 		});
 
 		searchQueriesImpl(maxId, _.rest(queries), allTweets, callback);
@@ -67,7 +68,7 @@ var searchQueries = function (maxId, queries, callback) {
 		}
 		var validTweets = _.filter(_.values(tweets), function(tweet) {
 			if (tweet.id <= maxId) {
-				console.log("WOAH " + tweet.id " IS BEFORE MAX " + maxId);
+				console.log("WOAH " + tweet.id + " IS BEFORE MAX " + maxId);
 			}
 			return tweet.id > maxId;
 		});
@@ -93,11 +94,12 @@ database.runWithConn(function() {
 
 			console.log('Search returned ' + tweets.length + ' tweets');
 
-			var tweetsToSave = _.filter(tweets, function(tweet) {
-				return tweet.indexOf('RT ') != 0;
+			// ignore retweets
+			tweets = _.filter(tweets, function(tweet) {
+				return tweet.text.indexOf('RT ') != 0;
 			});
 
-			database.saveTweets(tweetsToSave, function(err3, createdTweets) {
+			database.saveTweets(tweets, function(err3, createdTweets) {
 				if (err3) {
 					proc.bail('Database failed!', err3);
 				}

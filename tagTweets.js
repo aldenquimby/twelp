@@ -22,12 +22,12 @@ var getAllTweets = function(callback) {
 database.runWithConn(function() {
 	getAllTweets(function(tweets) {
 
-		var queries = ['#foodpoisoning', '#stomachache', 'food poison', 'food poisoning', 'stomach', 'vomit', 'puke', 'diarrhea', 'the runs'];
+		var queries = ['#foodpoisoning', '#stomachache', '"food poison"', '"food poisoning"', 'stomach', 'vomit', 'puke', 'diarrhea', '"the runs"'];
 
 		_.each(tweets, function(tweet) {
 			var newTags = {};
 			_.each(queries, function(query) {
-				if (tweet.text.toLowerCase().indexOf(query) != -1) {
+				if (tweet.text.toLowerCase().indexOf(query.replace('"', '')) != -1) {
 					newTags[query] = true;
 				}
 			});

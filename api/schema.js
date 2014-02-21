@@ -121,7 +121,7 @@ exports.createTweetForDb = function(tweet) {
         coordinates: coordinates,
         place: place,
         conversation: undefined,
-        tags: undefined
+        tags: []
     };
 };
 
