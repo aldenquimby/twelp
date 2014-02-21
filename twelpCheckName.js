@@ -3,56 +3,45 @@
 // **************************
 
 var _        = require('underscore');
-var database = require('./api/database'); 
-var lazy     = require("lazy");
 var fs       = require("fs");
+var database = require('./api/database'); 
+var proc     = require('./util/processUtil');
 
 // **************************
 // ******** PROGRAM ********
 // **************************
 
-var bail = function(msg, err) {
-	console.log(msg);
-	console.log(err);
-	process.exit(1);
-};
+var fromFile = './private/yelp_business_names.json';
 
-var fromFile = './private/20131205_businesses.json';
-var toFile = './private/yelp_business_names.txt';
+var bizNames = JSON.parse(fs.readFileSync(fromFile));
 
-database.connect(function() {
-	console.log('Opened db connection.');
+bizNames = _.uniq(_.map(bizNames, function(name) { return name.toLowerCase().trim(); }));
 
+database.runWithConn(function() {
 	database.findTweets({}, function(err, tweets) {
 		if (err) {
-			bail('Failed to find tweets', err);
+			proc.bail('Failed to find tweets', err);
 		}
 
-		new lazy(fs.createReadStream(fromFile))
-		.lines
-		.map(function(line) { return line.toString(); })
-		.forEach(function(line) {
-			var biz = JSON.parse(line.toString());
+		tweets = _.map(tweets, function(tweet) {
+			tweet.words = tweet.text.toLowerCase().split(' ');
+			return tweet;
+		});
 
-			var nameParts = biz.name.split(' ');
+		_.each(bizNames, function(name) {
+			var nameParts = name.split(' ');
+			var otherNameParts = name.replace("'", '').replace('-', '').split(' ');
 
 			var matchingTweets = _.filter(tweets, function(tweet) {
-				var tweetParts = tweet.text.split(' ');
-				return _.all(tweetParts, function(part) {
-					return _.contains(nameParts, part);
-				});
+				return _.difference(nameParts, tweet.words).length == 0 || 
+					   _.difference(otherNameParts, tweet.words).length == 0;
 			});
 
 			if (matchingTweets.length > 0) {
-				console.log(matchingTweets.length + ' MATCHES FOR ' + biz.name);
+				var lengthStr = matchingTweets.length < 10 ? matchingTweets.length + ' ' : matchingTweets.length;
+				console.log(lengthStr + ' => ' + name);
 			}
-		})
-		.join(function() {
-			console.log('DONE');
-			process.exit(0);
-      	});
-	});
+		});
 
-}, function(err) {
-	bail('Failed to connect to db.', err);
+	});
 });
