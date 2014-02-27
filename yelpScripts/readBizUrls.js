@@ -1,10 +1,4 @@
 // **************************
-// ******** PROCESS *********
-// **************************
-
-
-
-// **************************
 // ****** DEPENDENCIES ******
 // **************************
 
@@ -19,12 +13,6 @@ var ty      = require('../analysis/linkTwitterYelp');
 // ******** PROGRAM ********
 // **************************
 
-bail = function(msg, err) {
-	console.log(msg);
-	console.log(err);
-	process.exit(1);
-};
-
 var count = 0;
 var fromFile = './private/yelp_business_urls.txt';
 
@@ -37,7 +25,7 @@ new lazy(fs.createReadStream(fromFile))
 .forEach(function(line) {
 
 	ty.twitterHandleFromYelp(line, function(err, bizUrl, username) {
-		if (err) {
+		if (err) { 
 			console.log(err);
 		}
 		else if (username) {
@@ -46,8 +34,3 @@ new lazy(fs.createReadStream(fromFile))
 	});
 
 });
-
-
-
-
-

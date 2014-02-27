@@ -31,13 +31,10 @@ new lazy(fs.createReadStream(fromFile))
 
 return;
 // count number of foursquare checkins
-database.connect(function() {
-	console.log('Opened db connection.');
-
+database.runWithConn(function() {
+	
 	database.findTweets({}, function(err, tweets) {
-		if (err) {
-			proc.bail('Failed to find tweets', err);
-		}
+		if (err) { proc.bail('Failed to find tweets', err); }
 
 		var matchingTweets = _.filter(tweets, function(tweet) {
 			return tweet.urls && _.any(tweet.urls, function(url) {
@@ -49,8 +46,6 @@ database.connect(function() {
 		proc.done();
 	});
 
-}, function(err) {
-	proc.bail('Failed to connect to db.', err);
 });
 return;
 

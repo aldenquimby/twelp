@@ -12,9 +12,7 @@ var database = require('./api/database');
 
 var getAllTweets = function(callback) {
 	database.findTweets({}, function(err, tweets) {
-		if (err) {
-			proc.bail('Failed to find tweets', err);
-		}
+		if (err) { proc.bail('Failed to find tweets', err); }
 		callback(tweets);
 	});
 };

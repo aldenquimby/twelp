@@ -5,6 +5,7 @@
 var _       = require('underscore');
 var twitter = require('./api/twitterApi');
 var logger  = require('./util/log').getFileLogger('poison-search');
+var proc    = require('./util/processUtil');
 
 // **************************
 // ******** PROCESS *********
@@ -15,12 +16,6 @@ var queries = _.rest(process.argv, 2);
 // **************************
 // ****** PROGRAM ******
 // **************************
-
-bail = function(msg, err) {
-	console.log(msg);
-	console.log(err);
-	process.exit(1);
-};
 
 serializeQs = function(obj) {
   var str = [];
@@ -44,9 +39,7 @@ _.each(queries, function(query) {
 
 	// kick off search
 	twitter.search(serializeQs(searchParam), function(err, tweets) {
-		if (err) {
-			bail('Twitter API failed!', err);
-		}
+		if (err) { proc.bail('Twitter API failed!', err); }
 
 		console.log('Query \'' + query + '\' returned ' + tweets.length + ' tweets');
 		_.each(tweets, function(tweet) {

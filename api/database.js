@@ -107,5 +107,5 @@ exports.upsertYelpBusiness = function(yelpBiz, callback) {
 };
 
 exports.getYelpBusinesses = function(callback) {
-    yelpBizModel().find({}, callback);
+    yelpBizModel().find({}).exec(callback);
 };

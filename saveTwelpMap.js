@@ -12,16 +12,9 @@ var link     = require('./analysis/linkTwitterYelp');
 // ******** PROGRAM ********
 // **************************
 
-var bail = function(msg, err) {
-	console.log(msg);
-	console.log(err);
-	process.exit(1);
-};
-
 var fromFile = './private/20131205_businesses.json';
 
-database.connect(function() {
-	console.log('Opened db connection.');
+database.runWithConn(function() {
 
 	new lazy(fs.createReadStream(fromFile))
 	.lines
@@ -54,7 +47,4 @@ database.connect(function() {
 		});
 	});
 
-}, function(err) {
-	bail('Failed to connect to db.', err);
 });
-
