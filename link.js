@@ -89,7 +89,35 @@ var RestuarantSignal = new Class({
 	// restaurantLookup: all restaurants grouped by key {name, twitterUser}
 	// returns: map from restaurant key to score [0, 1]
 	restuarantSignal: function(tweet, expandedTweetSet, restaurantLookup) {
+		
+		this.preprocessTweetSet(expandedTweetSet);
+
+		var scoreLookup = {};
+
+		_.pairs(restaurantLookup, function(pair) {
+			var key = pair[0];
+			
+			var restaurantKey = {
+				name       : pair[1][0].name
+			  , twitter    : pair[1][0].twitter
+			  , foursquare : ''
+			};
+
+			var score = this.getScore(expandedTweetSet, restaurantKey);
+
+			if (score > 0) {
+				scoreLookup[key] = score;
+			}
+		});
+
+		return scoreLookup;
 	},
+
+	preprocessTweetSet: function(tweets) {
+	},
+
+	getScore: function(tweets, restaurantKey) {
+	}
 
 });
 
@@ -100,14 +128,22 @@ var DirectMentionRestuarantSignal = new Class(RestuarantSignal, {
 		return 'direct mention';
 	},
 
-	// summary: assign a score [0, 1] for each restaurant based on the tweet and/or expandedTweetSet
-	// restaurantLookup: all restaurants grouped by key {name, twitterUser}
-	// returns: map from restaurant key to score [0, 1]
-	restuarantSignal: function(tweet, expandedTweetSet, restaurantLookup) {
+	getScore: function(tweets, restaurantKey) {
 
-		// TODO
-		return {};
+		if (restaurant.twitter) {
 
+			var matchingTweets = _.filter(tweets, function(tweet) {
+				return _.any(tweet.user_mentions, function(um) {
+					return restuarant.twitter.toLowerCase() == um.screen_name.toLowerCase();
+				});
+			});
+
+			if (matchingTweets.length > 0) {
+				return 1;
+			}
+		}
+
+		return 0;
 	}
 
 });
@@ -119,14 +155,29 @@ var NameMatchRestuarantSignal = new Class(RestuarantSignal, {
 		return 'name match';
 	},
 
-	// summary: assign a score [0, 1] for each restaurant based on the tweet and/or expandedTweetSet
-	// restaurantLookup: all restaurants grouped by key {name, twitterUser}
-	// returns: map from restaurant key to score [0, 1]
-	restuarantSignal: function(tweet, expandedTweetSet, restaurantLookup) {
+	preprocessTweetSet: function(tweets) {
+		var self = this;
 
-		// TODO
-		return {};
+		self.wordsByTweetId = {};
 
+		_.each(tweets, function(tweet) {
+			self.wordsByTweetId[tweet.id] = tweet.text.toLowerCase().split(' ');
+		});
+	},
+
+	getScore: function(tweets, restaurantKey) {
+		var self = this;
+		
+		var nameParts = restaurantKey.name.split(' ');
+		var otherNameParts = restaurantKey.name.replace("'", '').replace('-', '').split(' ');
+
+		var matchingTweets = _.filter(tweets, function(tweet) {
+			var words = self.wordsByTweetId[tweet.id];
+			return _.difference(nameParts, words).length == 0 || 
+				   _.difference(otherNameParts, words).length == 0;
+		});
+
+		return matchingTweets.length / tweets.length;
 	}
 
 });
@@ -135,17 +186,21 @@ var FoursquareRestuarantSignal = new Class(RestuarantSignal, {
 
     // returns: the name of the technique
 	getName: function() {
-		return 'foursqaure';
+		return 'foursquare';
 	},
 
-	// summary: assign a score [0, 1] for each restaurant based on the tweet and/or expandedTweetSet
-	// restaurantLookup: all restaurants grouped by key {name, twitterUser}
-	// returns: map from restaurant key to score [0, 1]
-	restuarantSignal: function(tweet, expandedTweetSet, restaurantLookup) {
+	getScore: function(tweets, restaurantKey) {
 
-		// TODO
-		return {};
+		var nameParts = restaurantKey.name.split(' ');
+		var otherNameParts = restaurantKey.name.replace("'", '').replace('-', '').split(' ');
 
+		var matchingTweets = _.filter(tweets, function(tweet) {
+			return tweet.urls && _.any(tweet.urls, function(url) {
+				return url.toLowerCase().indexOf('foursquare/' + restaurantKey.foursquare) != -1;
+			});
+		});
+
+		return matchingTweets.length > 0 ? 1 : 0;
 	}
 
 });
@@ -173,7 +228,7 @@ var DirectNameFoursquareRestuarantSignal = new Class(RestuarantSignal, {
 
     // returns: the name of the technique
 	getName: function() {
-		return '1/3 direct mention, 1/3 name match, 1/3 foursqaure';
+		return '1/3 direct mention, 1/3 name match, 1/3 foursquare';
 	},
 
 	// summary: assign a score [0, 1] for each restaurant based on the tweet and/or expandedTweetSet
