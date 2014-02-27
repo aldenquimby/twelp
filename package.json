@@ -9,6 +9,7 @@
   "dependencies": {
     "cheerio": "*",
     "factual-api": "*",
+    "jsclass": "*",
     "json2csv": "*",
     "lazy": "*",
     "mongoose": "*",

@@ -28,6 +28,10 @@ exports.runWithConn = function(callback) {
 	});
 };
 
+// ----------------------------
+// ---------  TWEETS  ---------
+// ----------------------------
+
 exports.saveTweets = function(tweets, callback) {
 	tweetModel().create(tweets, function (err) {
 		var createdTweets = _.rest(arguments);
@@ -42,6 +46,19 @@ exports.getMaxTweetId = function(callback) {
 			var maxId = (doc || {}).id;
 		 	callback(err, maxId);
 		});
+};
+
+exports.findById = function(id, callback) {
+	tweetModel().findById(id).exec(callback);
+};
+
+exports.deleteTweets = function(searchRegex, callback) {
+	tweetModel().remove({text: { $regex: searchRegex, $options: 'i' }})
+		 .exec(callback);
+};
+
+exports.updateTweet = function(id, update, callback) {
+	tweetModel().findByIdAndUpdate(id, update, callback);
 };
 
 exports.findTweets = function(search, callback) {
@@ -73,14 +90,9 @@ exports.searchTweets = function(searchRegex, callback) {
 	}, callback);
 };
 
-exports.deleteTweets = function(searchRegex, callback) {
-	tweetModel().remove({text: { $regex: searchRegex, $options: 'i' }})
-		 .exec(callback);
-};
-
-exports.updateTweet = function(id, update, callback) {
-	tweetModel().findByIdAndUpdate(id, update, callback);
-};
+// ----------------------------
+// --------  YELP BIZ  --------
+// ----------------------------
 
 exports.saveYelpBusinesses = function(yelpBizs, callback) {
 	yelpBizModel().create(yelpBizs, function (err) {
