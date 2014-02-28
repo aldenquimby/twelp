@@ -13,7 +13,7 @@ var database = require('../api/database');
 // **************************
 
 var fromFile = './private/20131205_businesses.json';
-var toFile = './private/yelp_businesses.json';
+var toFile = './private/yelp_businesses-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
 
 database.runWithConn(function() {
 
@@ -32,7 +32,8 @@ database.runWithConn(function() {
 		.map(function(line) {
 			var biz = JSON.parse(line.toString());
 			biz.twitter = twitterByYelpBiz[biz.id];
-			return _.pick(biz, 'id', 'name', 'twitter');
+			biz.coordinate = biz.location.coordinate;
+			return _.pick(biz, 'id', 'name', 'twitter', 'coordinate');
 		})
 		.join(function(bizs) {
 			fs.writeFile(toFile, JSON.stringify(bizs), function(err) {

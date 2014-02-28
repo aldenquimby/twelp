@@ -73,8 +73,19 @@ var ConversationTweetExpansion = new Class(TweetExpansion, {
 	// summary: expand tweet into set of relevant tweets
 	// returns: list of tweets
 	expandTweet: function(tweet) {
-		// TODO
-		return [tweet];
+
+		var results = [tweet];
+
+		var back = 0;
+		while (tweet && tweet.in_reply_to && back < this.numBack) {
+			tweet = this.tweetApi.getTweetById(tweet.in_reply_to.status_id);
+			if (tweet) {
+				results.push(tweet);
+			}
+			back++;
+		}
+
+		return results;
 	}
 
 });
@@ -89,12 +100,13 @@ var RestuarantSignal = new Class({
 	// restaurantLookup: all restaurants grouped by key {name, twitterUser}
 	// returns: map from restaurant key to score [0, 1]
 	restuarantSignal: function(tweet, expandedTweetSet, restaurantLookup) {
-		
-		this.preprocessTweetSet(expandedTweetSet);
+		var self = this;
+
+		self.preprocessTweetSet(expandedTweetSet);
 
 		var scoreLookup = {};
 
-		_.pairs(restaurantLookup, function(pair) {
+		_.each(_.pairs(restaurantLookup), function(pair) {
 			var key = pair[0];
 			
 			var restaurantKey = {
@@ -103,7 +115,7 @@ var RestuarantSignal = new Class({
 			  , foursquare : ''
 			};
 
-			var score = this.getScore(expandedTweetSet, restaurantKey);
+			var score = self.getScore(expandedTweetSet, restaurantKey);
 
 			if (score > 0) {
 				scoreLookup[key] = score;
@@ -117,6 +129,24 @@ var RestuarantSignal = new Class({
 	},
 
 	getScore: function(tweets, restaurantKey) {
+	},
+
+	// summary: scale signal based on location's distinace to twitter user
+	// returns: list of { restaurantId, score }
+	handleChainRestaurants: function(tweet, expandedTweetSet, restaurantLookup, scoreLookup) {
+		var results = [];
+		_.each(_.pairs(restaurantLookup), function(pair) {
+			var score = scoreLookup[pair[0]];
+			if (score) {
+				_.each(pair[1], function(restaurant) {
+					results.push({
+						restaurantId : restaurant.id,
+						score        : score
+					});
+				});
+			}
+		});
+		return results;
 	}
 
 });
@@ -130,11 +160,11 @@ var DirectMentionRestuarantSignal = new Class(RestuarantSignal, {
 
 	getScore: function(tweets, restaurantKey) {
 
-		if (restaurant.twitter) {
+		if (restaurantKey.twitter) {
 
 			var matchingTweets = _.filter(tweets, function(tweet) {
 				return _.any(tweet.user_mentions, function(um) {
-					return restuarant.twitter.toLowerCase() == um.screen_name.toLowerCase();
+					return restaurantKey.twitter.toLowerCase() == um.screen_name.toLowerCase();
 				});
 			});
 
@@ -167,7 +197,7 @@ var NameMatchRestuarantSignal = new Class(RestuarantSignal, {
 
 	getScore: function(tweets, restaurantKey) {
 		var self = this;
-		
+
 		var nameParts = restaurantKey.name.split(' ');
 		var otherNameParts = restaurantKey.name.replace("'", '').replace('-', '').split(' ');
 
@@ -196,10 +226,15 @@ var FoursquareRestuarantSignal = new Class(RestuarantSignal, {
 
 		var matchingTweets = _.filter(tweets, function(tweet) {
 			return tweet.urls && _.any(tweet.urls, function(url) {
-				return url.toLowerCase().indexOf('foursquare/' + restaurantKey.foursquare) != -1;
+				return url.toLowerCase().indexOf('foursquare') != -1;
 			});
 		});
 
+		if (matchingTweets.length > 0) {
+			console.log('OMG TWEETS HAVE FOURSQUARE!');
+		}
+
+		return 0;
 		return matchingTweets.length > 0 ? 1 : 0;
 	}
 
@@ -212,14 +247,74 @@ var GeoLocationRestuarantSignal = new Class(RestuarantSignal, {
 		return 'geo-location';
 	},
 
-	// summary: assign a score [0, 1] for each restaurant based on the tweet and/or expandedTweetSet
-	// restaurantLookup: all restaurants grouped by key {name, twitterUser}
-	// returns: map from restaurant key to score [0, 1]
-	restuarantSignal: function(tweet, expandedTweetSet, restaurantLookup) {
+	getScore: function(tweets, restaurantKey) {
+		return 0;
+	},
 
-		// TODO
-		return {};
+	// summary: scale signal based on location's distinace to twitter user
+	// returns: list of { restaurantId, score }
+	handleChainRestaurants: function(tweet, expandedTweetSet, restaurantLookup, scoreLookup) {
+		var self = this;
 
+		var scores = [];
+
+		if (tweet.coordinates && tweet.coordinates.coordinates && tweet.coordinates.coordinates.length > 0) {
+
+			var tweetLon = tweet.coordinates.coordinates[0];
+			var tweetLat = tweet.coordinates.coordinates[1];
+
+			// console.log('tweetLat: ' + tweetLat + ' tweetLon: ' + tweetLon);
+
+			_.each(_.pairs(restaurantLookup), function(pair) {
+
+				_.each(pair[1], function(restaurant) {
+
+					if (restaurant.coordinate.latitude && restaurant.coordinate.longitude) {
+
+						var restLat = restaurant.coordinate.latitude;
+						var restLon = restaurant.coordinate.longitude;
+
+						// console.log('restLat: ' + restLat + ' restLon: ' + restLon);
+
+						var distance = self.coordDistance(tweetLat, tweetLon, restLat, restLon);
+
+						// console.log('distance: ' + distance);
+
+						var ZERO_DIST = 25;
+
+						var score = Math.min(1, 1-(distance-ZERO_DIST)/distance);
+
+						scores.push({
+							restaurantId : restaurant.id
+						  , score        : score
+						});
+
+					}
+
+				});
+			});
+
+		}
+
+		return scores;
+	},
+
+	coordDistance: function(lat1,lon1,lat2,lon2) {
+		var R = 6371; // Radius of the earth in km
+		var dLat = this.deg2rad(lat2-lat1);  // deg2rad below
+		var dLon = this.deg2rad(lon2-lon1); 
+		var a = 
+		Math.sin(dLat/2) * Math.sin(dLat/2) +
+		Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
+		Math.sin(dLon/2) * Math.sin(dLon/2)
+		; 
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		var d = R * c; // distance in km
+		return d * 1000; // distance in m
+	}, 
+
+	deg2rad: function(deg) {
+		return deg * (Math.PI/180)
 	}
 
 });
@@ -241,7 +336,7 @@ var DirectNameFoursquareRestuarantSignal = new Class(RestuarantSignal, {
 		var foursquareScores = new FoursquareRestuarantSignal().restuarantSignal(tweet, expandedTweetSet, restaurantLookup);
 
 		var addScoresToResult = function(result, scores, weight) {
-			_.pairs(scores, function(pair) {
+			_.each(_.pairs(scores), function(pair) {
 				var restKey = pair[0];
 				var score = pair[1];
 				result[restKey] = result[restKey] || 0;
@@ -292,26 +387,14 @@ var Technique = new Class({
 	// summary: scale signal based on location's distinace to twitter user
 	// returns: list of { restaurantId, score }
 	handleChainRestaurants: function(tweet, expandedTweetSet, restaurantLookup, scoreLookup) {
-		var results = [];
-		_.pairs(restaurantLookup, function(pair) {
-			var score = scoreLookup[pair[0]];
-			if (score) {
-				_.each(pair[1], function(restaurant) {
-					results.push({
-						restaurantId : restaurant.id,
-						score        : score
-					});
-				});
-			}
-		});
-		return results;
+		return this.signal.handleChainRestaurants(tweet, expandedTweetSet, restaurantLookup, scoreLookup);
 	},
 
 	// summary: final filter, possibly remove weak restaurant signals
 	// returns: list of { restaurantId, score }
 	thresholdFilter: function(restaurantScores) {
 		return _.filter(restaurantScores, function(rs) {
-			return rs.score > 0;
+			return rs.score > 0.05;
 		});
 	}
 
@@ -322,7 +405,7 @@ var Technique = new Class({
 // **************************
 
 // do the test
-var runExperiment = function(tweets, techniques, restaurantLookup) {
+var runExperiment = function(tweets, techniques, restaurantLookup, restaurantsById) {
 
 	var result = _.map(techniques, function(tech) {
 
@@ -332,19 +415,37 @@ var runExperiment = function(tweets, techniques, restaurantLookup) {
 
 			var scoreLookup = tech.restuarantSignal(tweet, expandedTweetSet, restaurantLookup);
 
-			var restuarantScores = tech.handleChainRestaurants(tweet, expandedTweetSet, restaurantLookup, scoreLookup);
+			var restaurantScores = tech.handleChainRestaurants(tweet, expandedTweetSet, restaurantLookup, scoreLookup);
 
-			restaurantScores = tech.thresholdFilter(restuarantScores);
+			restaurantScores = tech.thresholdFilter(restaurantScores);
 
-			restuarantScores = _.sortBy(restuarantScores, function(rs) {
+			restaurantScores = _.sortBy(restaurantScores, function(rs) {
 				return -rs.score;
 			});
 
+			// tweak for display
+			restaurantScores = _.map(restaurantScores, function(rs) {
+				rs.restaurant = restaurantsById[rs.restaurantId];
+				rs.restaurant.url = 'http://www.yelp.com/biz/' + rs.restaurant.id;
+				rs.restaurantId = undefined;
+				rs.restaurant.id = undefined;
+				rs.restaurant.coordinate = undefined;
+				return rs;
+			});
+			var displayTweet = function(tweet) {
+				var date = new Date(tweet.created_at).toLocaleString();
+				return {
+					text : tweet.text
+				  , user : tweet.user.screen_name
+				  , date : date.substring(4, date.length - 15)
+				}
+			};
+
 			return {
-				tweet            : tweet,
-				expandedTweetSet : expandedTweetSet,
-				scoreLookup      : scoreLookup,
-				restuarantScores : restuarantScores
+				tweet            : displayTweet(tweet)
+			  , expandedTweetSet : _.map(expandedTweetSet, displayTweet)
+			  , scoreLookup      : scoreLookup
+			  , restaurantScores : restaurantScores
 			};
 
 		});
@@ -370,6 +471,7 @@ var tweetsById = _.indexBy(allTweets, 'id');
 // all restaurants by key
 var restaurants = JSON.parse(fs.readFileSync(YELP_MINI_BIZ_FILE));
 var restaurantLookup = _.groupBy(restaurants, restaurantKeySelector);
+var restaurantsById = _.indexBy(restaurants, 'id');
 
 // tweet API for techniques to use
 var tweetApi = {
@@ -380,7 +482,8 @@ var tweetApi = {
 
 // the techniques to test
 var techniques = [
-	new Technique(new UserTimelineTweetExpansion(tweetApi, 7, 7), new DirectNameFoursquareRestuarantSignal())
+    new Technique(new UserTimelineTweetExpansion(tweetApi, 7, 7), new DirectNameFoursquareRestuarantSignal())
+  , new Technique(new UserTimelineTweetExpansion(tweetApi, 7, 7), new GeoLocationRestuarantSignal())
   , new Technique(new ConversationTweetExpansion(tweetApi, 3, 3), new NameMatchRestuarantSignal())
 ];
 
@@ -388,6 +491,6 @@ var techniques = [
 var tweets = _.first(allTweets, 50);
 
 // fire away
-runExperiment(tweets, techniques, restaurantLookup);
+runExperiment(tweets, techniques, restaurantLookup, restaurantsById);
 
 proc.done();
