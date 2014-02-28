@@ -2,10 +2,11 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var _     = require('underscore');
-var Class = require('jsclass/src/core').Class;
-var proc  = require('./util/processUtil');
-var fs    = require('fs');
+var _      = require('underscore');
+var Class  = require('jsclass/src/core').Class;
+var proc   = require('./util/processUtil');
+var fs     = require('fs');
+var moment = require('moment');
 
 // **************************
 // ******* CONSTANTS ********
@@ -38,7 +39,7 @@ var TweetExpansion = new Class({
 var UserTimelineTweetExpansion = new Class(TweetExpansion, {
 
     initialize: function(tweetApi, timeBack, timeForward) {
-        this.tweetApi = tweetApi;
+    	this.callSuper();
         this.timeBack = timeBack;
         this.timeForward = timeForward;
     },
@@ -51,8 +52,17 @@ var UserTimelineTweetExpansion = new Class(TweetExpansion, {
 	// summary: expand tweet into set of relevant tweets
 	// returns: list of tweets
 	expandTweet: function(tweet) {
-		// TODO
-		return [tweet];
+
+		var tweetDate = moment(tweet.created_at);
+		var startDate = tweetDate.subtract('days', this.timeBack);
+		var endDate = tweetDate.add('days', this.timeForward);
+		
+		var userTweets = this.tweetApi.getTweetsByUser(tweet.user.id);
+
+		return _.filter(userTweets, function(t) {
+			var date = moment(t.created_at);
+			return date > startDate && date < endDate;
+		});
 	}
 
 });
@@ -60,7 +70,7 @@ var UserTimelineTweetExpansion = new Class(TweetExpansion, {
 var ConversationTweetExpansion = new Class(TweetExpansion, {
 
     initialize: function(tweetApi, numBack, numForward) {
-        this.tweetApi = tweetApi;
+        this.callSuper();
         this.numBack = numBack;
         this.numForward = numForward;
     },
@@ -89,6 +99,37 @@ var ConversationTweetExpansion = new Class(TweetExpansion, {
 	}
 
 });
+
+var UserTimelineAndConvoTweetExpansion = new Class(TweetExpansion, {
+
+    initialize: function(tweetApi, timeBack, timeForward, numBack) {
+        this.timelineExpansion = new UserTimelineTweetExpansion(tweetApi, timeBack, timeForward);
+        this.convoExpansion = new ConversationTweetExpansion(tweetApi, numBack, 0);
+    },
+
+    // returns: the name of the technique
+	getName: function() {
+		return this.timelineExpansion.getName() + ' AND ' + this.convoExpansion.getName();
+	},
+
+	// summary: expand tweet into set of relevant tweets
+	// returns: list of tweets
+	expandTweet: function(tweet) {
+		var self = this;
+
+		var tweets = [];
+
+		var userTimelineTweets = self.timelineExpansion.expandTweet(tweet);
+
+		_.each(userTimelineTweets, function(tweet) {
+			var convoTweets = self.convoExpansion.expandTweet(tweet);
+			tweets = tweets.concat(convoTweets);
+		});
+
+		return tweets;
+	}
+
+})
 
 var RestuarantSignal = new Class({
 
@@ -467,6 +508,9 @@ var restaurantKeySelector = function(restaurant) {
 // preload all tweets
 var allTweets = JSON.parse(fs.readFileSync(TWEETS_FILE));
 var tweetsById = _.indexBy(allTweets, 'id');
+var tweetsByUser = _.groupBy(allTweets, function(tweet) {
+	return tweet.user.id;
+});
 
 // all restaurants by key
 var restaurants = JSON.parse(fs.readFileSync(YELP_MINI_BIZ_FILE));
@@ -477,13 +521,16 @@ var restaurantsById = _.indexBy(restaurants, 'id');
 var tweetApi = {
 	getTweetById: function(id) {
 		return tweetsById[id];
+	},
+	getTweetsByUser: function(user_id) {
+		return tweetsByUser[user_id];
 	}
 };
 
 // the techniques to test
 var techniques = [
     new Technique(new UserTimelineTweetExpansion(tweetApi, 7, 7), new DirectNameFoursquareRestuarantSignal())
-  , new Technique(new UserTimelineTweetExpansion(tweetApi, 7, 7), new GeoLocationRestuarantSignal())
+  , new Technique(new UserTimelineAndConvoTweetExpansion(tweetApi, 7, 7, 1), new GeoLocationRestuarantSignal())
   , new Technique(new ConversationTweetExpansion(tweetApi, 3, 3), new NameMatchRestuarantSignal())
 ];
 

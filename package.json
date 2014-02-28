@@ -12,6 +12,7 @@
     "jsclass": "*",
     "json2csv": "*",
     "lazy": "*",
+    "moment": "*",
     "mongoose": "*",
     "request": "*",
     "twit": "*",
