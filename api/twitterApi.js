@@ -58,15 +58,15 @@ exports.startStream = function(filterParam, onTweetCallback) {
 	return stream;
 };
 
-var trackConversionImpl = function(fromTweet, callback, tweets) {
+var trackConversionImpl = function(fromTweet, numBack, callback, tweets) {
 
 	// stop if end of convo
 	if (!fromTweet.in_reply_to) {
 		return callback(null, tweets);
 	}
 
-	// stop if 10 tweets in convo
-	if (tweets.length >= 10) {
+	// stop if back far enough in convo
+	if (tweets.length >= numBack) {
 		return callback(null, tweets);
 	}
 
@@ -83,13 +83,13 @@ var trackConversionImpl = function(fromTweet, callback, tweets) {
 
 		var tweet = schema.createTweetForDb(status);
 		tweets.push(tweet);
-		return trackConversionImpl(tweet, callback, tweets);
+		return trackConversionImpl(tweet, numBack, callback, tweets);
     });
 };
 
-exports.trackConversionBack = function(fromTweet, callback) {
+exports.trackConversionBack = function(fromTweet, numBack, callback) {
 
-	return trackConversionImpl(fromTweet, callback, []);
+	return trackConversionImpl(fromTweet, numBack, callback, []);
 };
 
 

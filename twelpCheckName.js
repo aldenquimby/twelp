@@ -3,7 +3,7 @@
 // **************************
 
 var _        = require('underscore');
-var fs       = require("fs");
+var fs       = require('fs');
 var database = require('./api/database'); 
 var proc     = require('./util/processUtil');
 

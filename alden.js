@@ -7,8 +7,8 @@ var twitter = require('./api/twitterApi');
 var proc = require('./util/processUtil'); 
 var _        = require('underscore');
 var database = require('./api/database'); 
-var lazy     = require("lazy");
-var fs       = require("fs");
+var lazy     = require('lazy');
+var fs       = require('fs');
 
 // **************************
 // ******** PROGRAM ********

@@ -4,8 +4,8 @@
 
 var _       = require('underscore');
 var cheerio = require('cheerio');
-var lazy    = require("lazy");
-var fs      = require("fs");
+var lazy    = require('lazy');
+var fs      = require('fs');
 var request = require('request');
 var ty      = require('../analysis/linkTwitterYelp');
 

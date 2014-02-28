@@ -27,7 +27,7 @@ database.runWithConn(function() {
 
 		_.each(_.first(tweets, 50), function(first) {
 
-			twitter.trackConversionBack(first, function(err2, convo) {
+			twitter.trackConversionBack(first, 10, function(err2, convo) {
 				if (err2) {
 					proc.bail('Convo tracking failed', err2);
 				}

@@ -4,7 +4,7 @@
 
 var proc     = require('../util/processUtil'); 
 var database = require('../api/database'); 
-var fs       = require("fs");
+var fs       = require('fs');
 
 // **************************
 // ******** PROGRAM ********

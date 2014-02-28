@@ -1,5 +1,5 @@
 
-var fs  = require("fs");
+var fs  = require('fs');
 
 exports.lineCount = function(file, callback) {
 	var i;

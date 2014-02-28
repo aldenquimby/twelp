@@ -4,7 +4,7 @@
 
 var proc     = require('../util/processUtil'); 
 var database = require('../api/database'); 
-var fs       = require("fs");
+var fs       = require('fs');
 var _        = require('underscore');
 
 // ************************
@@ -215,7 +215,13 @@ database.runWithConn(function() {
 			return positiveTweetHash[cleanTweet(tweet.text)];
 		});
 
+		tweetsToKeep = _.sortBy(tweetsToKeep, function(tweet) {
+			return !(tweet.in_reply_to && tweet.in_reply_to.status_id);
+		});
+
 		tweetsToKeep = _.first(tweetsToKeep, 50);
+
+		console.log(tweetsToKeep[0]);
 
 		proc.done(_.pluck(tweetsToKeep, 'id'));
 

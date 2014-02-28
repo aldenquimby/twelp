@@ -8,8 +8,8 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var lazy = require("lazy");
-var fs  = require("fs");
+var lazy = require('lazy');
+var fs  = require('fs');
 
 // **************************
 // ******** PROGRAM ********
