@@ -11,9 +11,11 @@ var proc     = require('./util/processUtil');
 // ******** PROGRAM ********
 // **************************
 
-var fromFile = './private/yelp_business_names.json';
+var fromFile = './private/yelp_businesses.json';
 
 var bizNames = JSON.parse(fs.readFileSync(fromFile));
+
+bizNames = _.pluck(bizNames, 'name');
 
 bizNames = _.uniq(_.map(bizNames, function(name) { return name.toLowerCase().trim(); }));
 

@@ -28,14 +28,14 @@ var TweetSchema = new Schema({
     }],
     coordinates: { 
         type: { type: String },
-    	coordinates: [Number]
+    	coordinates: []
     },
     place: {
     	id: String,
     	full_name: String,
     	bounding_box: {
             type: { type: String },
-    		coordinates: [Number]
+    		coordinates: []
     	}
     },
     class_label: String,

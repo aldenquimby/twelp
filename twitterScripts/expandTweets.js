@@ -15,59 +15,6 @@ var twitter  = require('../api/twitterApi');
 // *********************
 
 var tweetsToExpand = [ 
-  '390292076463923200',
-  '389987857835626496',
-  '389944864689098752',
-  '389784043367067648',
-  '391291944682680321',
-  '392819478616354816',
-  '392818178730254336',
-  '394114287503171584',
-  '393987387506057216',
-  '390230026685513728',
-  '388916528017854464',
-  '388305869756456960',
-  '388343665090756608',
-  '388031141925515264',
-  '391326865560190976',
-  '392519292446851072',
-  '392102868922019840',
-  '391360858623729664',
-  '392777612265000960',
-  '393115425195585536',
-  '393524319533268992',
-  '393236859461312512',
-  '400045084642914304',
-  '399804808179105793',
-  '399762201252478976',
-  '405134286032236545',
-  '404609406375301120',
-  '404491660400156673',
-  '409012447349981184',
-  '407918126227931136',
-  '407945109846519808',
-  '407694039006187520',
-  '407637256934277120',
-  '407635659848179712',
-  '407596701453537280',
-  '407542052180619264',
-  '407390264466997249',
-  '407364281827880960',
-  '407335320510672897',
-  '407134590823038976',
-  '406903754655801344',
-  '406764503779770368',
-  '406692207568375808',
-  '409325218948468736',
-  '409299364117753856',
-  '410536097936994304',
-  '410122509347213312',
-  '410306801092296704',
-  '409735145629818880',
-  '409712868326899712' 
-];
-
-tweetsToExpand = [ 
   '399756894098583552',
   '406740861402513408',
   '411930421145128960',
@@ -120,31 +67,76 @@ tweetsToExpand = [
   '399762201252478976' 
 ];
 
-var toFile = './private/convo-tweets-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
 
-database.runWithConn(function() {
+var expandConvo = function(tweets) {
 
-	database.findTweets({ "id": { "$in": tweetsToExpand } }, function(err, tweets) {
-		if (err) { proc.bail('Failed to find tweets', err); }
+    var toFile = './private/convo-tweets-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
 
-      _.each(tweets, function(tweet) {
+    _.each(tweets, function(tweet) {
 
-        twitter.trackConversionBack(tweet, , function(err2, convo) {
-          if (err2) { proc.bail('Convo tracking failed', err2); }
+      twitter.trackConversionBack(tweet, 3, function(err2, convo) {
+        if (err2) { proc.bail('Convo tracking failed', err2); }
 
-          _.each(convo, function(t) {
-            t.tags.push('convo');
-            t.tags.push('convo-' + tweet.id);
-          });
+        _.each(convo, function(t) {
+          t.tags.push('convo');
+          t.tags.push('convo-' + tweet.id);
+        });
 
-          fs.appendFile(toFile, JSON.stringify(convo) + "\n", function(err) {
-            if (err) { proc.bail('Failed to save file', err); }
-          });
-
+        fs.appendFile(toFile, JSON.stringify(convo) + "\n", function(err) {
+          if (err) { proc.bail('Failed to save file', err); }
         });
 
       });
 
-	});
+    });
+
+};
+
+var expandUser = function(tweets) {
+
+  var toFile = './private/user-tweets-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
+
+  _.each(tweets, function(tweet) {
+
+    twitter.userTimeline(tweet.user.id, null, tweet.id, function(err2, backwards) {
+      if (err2) { proc.bail('Backward tracking failed', err2); }
+
+      _.each(backwards, function(t) {
+        t.tags.push('user');
+        t.tags.push('user-' + tweet.user.id);
+      });
+
+      fs.appendFile(toFile, JSON.stringify(backwards) + "\n", function(err) {
+        if (err) { proc.bail('Failed to save file', err); }
+      });
+
+    });
+
+    twitter.userTimeline(tweet.user.id, tweet.id, null, function(err2, forwards) {
+      if (err2) { proc.bail('Forward tracking failed', err2); }
+
+      _.each(forwards, function(t) {
+        t.tags.push('user');
+        t.tags.push('user-' + tweet.user.id);
+      });
+
+      fs.appendFile(toFile, JSON.stringify(forwards) + "\n", function(err) {
+        if (err) { proc.bail('Failed to save file', err); }
+      });
+
+    });
+
+  });
+
+};
+
+database.runWithConn(function() {
+
+  database.findTweets({ "id": { "$in": tweetsToExpand } }, function(err, tweets) {
+    if (err) { proc.bail('Failed to find tweets', err); }
+
+    expandUser(tweets);
+
+  });
 
 });

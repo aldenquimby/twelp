@@ -3,11 +3,12 @@ var keys = require('../private/keys');
 var schema = require('./schema');
 var twit = require('twit');
 var _    = require('underscore');
+var TWITTER_KEYS = keys.TWITTER[0];
 var twitter = new twit({
-  consumer_key: keys.TWITTER_CONSUMER_KEY,
-  consumer_secret: keys.TWITTER_CONSUMER_SECRET,
-  access_token: keys.TWITTER_ACCESS_TOKEN,
-  access_token_secret: keys.TWITTER_ACCESS_SECRET
+  consumer_key: TWITTER_KEYS.CONSUMER_KEY,
+  consumer_secret: TWITTER_KEYS.CONSUMER_SECRET,
+  access_token: TWITTER_KEYS.ACCESS_TOKEN,
+  access_token_secret: TWITTER_KEYS.ACCESS_SECRET
 });
 
 var deserializeQs = function(query) {
@@ -25,6 +26,9 @@ var deserializeQs = function(query) {
     }
     return b;
 };
+
+
+
 
 var searchImpl = function(query, callback, tweets) {
 
@@ -51,12 +55,18 @@ exports.search = function(query, callback) {
 	return searchImpl(query, callback, []);
 };
 
+
+
+
 exports.startStream = function(filterParam, onTweetCallback) {
 
 	var stream = twitter.stream('statuses/filter', filterParam);
 	stream.on('tweet', onTweetCallback);
 	return stream;
 };
+
+
+
 
 var trackConversionImpl = function(fromTweet, numBack, callback, tweets) {
 
@@ -92,4 +102,37 @@ exports.trackConversionBack = function(fromTweet, numBack, callback) {
 	return trackConversionImpl(fromTweet, numBack, callback, []);
 };
 
+
+
+
+exports.userTimeline = function(user_id, since_id, max_id, callback) {
+
+	var param = {
+		user_id   : user_id,
+		count     : 200,
+		trim_user : true
+	};
+	if (since_id) {
+		param.since_id = since_id;
+	}
+	if (max_id) {
+		param.max_id = max_id;
+	}
+
+	twitter.get('statuses/user_timeline', param, function(err, resp) {
+		if (err) {
+			// 401 means timeline is protected
+			if (err.statusCode == 401) {
+				return callback(null, []);
+			}
+			else {
+				return callback(err);
+			}
+		}
+
+		var tweets = _.map(resp, schema.createTweetForDb);
+		callback(null, tweets);
+	});
+
+};
 

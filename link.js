@@ -7,12 +7,14 @@ var Class  = require('jsclass/src/core').Class;
 var proc   = require('./util/processUtil');
 var fs     = require('fs');
 var moment = require('moment');
+var fzy    = require('./fuzzyMatching');
 
 // **************************
 // ******* CONSTANTS ********
 // **************************
 
 var TWEETS_FILE        = './private/tweets-20140227T030314518Z.json';
+var TWEETS_EXTRA_FILE  = './private/extra-tweets-20140228T193033464Z.json';
 var YELP_MINI_BIZ_FILE = './private/yelp_businesses.json';
 
 // **************************
@@ -39,7 +41,7 @@ var TweetExpansion = new Class({
 var UserTimelineTweetExpansion = new Class(TweetExpansion, {
 
     initialize: function(tweetApi, timeBack, timeForward) {
-    	this.callSuper();
+    	this.callSuper(tweetApi);
         this.timeBack = timeBack;
         this.timeForward = timeForward;
     },
@@ -53,16 +55,21 @@ var UserTimelineTweetExpansion = new Class(TweetExpansion, {
 	// returns: list of tweets
 	expandTweet: function(tweet) {
 
-		var tweetDate = moment(tweet.created_at);
-		var startDate = tweetDate.subtract('days', this.timeBack);
-		var endDate = tweetDate.add('days', this.timeForward);
-		
+		var startDate = moment(tweet.created_at).subtract('days', this.timeBack);
+		var endDate = moment(tweet.created_at).add('days', this.timeForward);
+
 		var userTweets = this.tweetApi.getTweetsByUser(tweet.user.id);
 
-		return _.filter(userTweets, function(t) {
+		var results = _.filter(userTweets, function(t) {
 			var date = moment(t.created_at);
-			return date > startDate && date < endDate;
+			return date >= startDate && date <= endDate;
 		});
+
+		if (results.length == 0) {
+			proc.bail('NO TIMELINE EXPANSION RESULTS!');
+		}
+
+		return results;
 	}
 
 });
@@ -180,6 +187,7 @@ var RestuarantSignal = new Class({
 			var score = scoreLookup[pair[0]];
 			if (score) {
 				_.each(pair[1], function(restaurant) {
+					if (!restaurant.id) { console.log(restaurant); }
 					results.push({
 						restaurantId : restaurant.id,
 						score        : score
@@ -283,6 +291,10 @@ var FoursquareRestuarantSignal = new Class(RestuarantSignal, {
 
 var GeoLocationRestuarantSignal = new Class(RestuarantSignal, {
 
+	initialize: function(dist){
+		this.dist = dist;
+	},
+
     // returns: the name of the technique
 	getName: function() {
 		return 'geo-location';
@@ -297,61 +309,67 @@ var GeoLocationRestuarantSignal = new Class(RestuarantSignal, {
 	handleChainRestaurants: function(tweet, expandedTweetSet, restaurantLookup, scoreLookup) {
 		var self = this;
 
-		var scores = [];
+		var scoresByRestaurant = {};
 
-		if (tweet.coordinates && tweet.coordinates.coordinates && tweet.coordinates.coordinates.length > 0) {
+		_.each(expandedTweetSet, function(twt) {
+		
+			if (twt.coordinates && twt.coordinates.coordinates && twt.coordinates.coordinates.length > 0) {
 
-			var tweetLon = tweet.coordinates.coordinates[0];
-			var tweetLat = tweet.coordinates.coordinates[1];
+				var tweetLon = twt.coordinates.coordinates[0];
+				var tweetLat = twt.coordinates.coordinates[1];
 
-			// console.log('tweetLat: ' + tweetLat + ' tweetLon: ' + tweetLon);
+				// console.log('tweetLat: ' + tweetLat + ' tweetLon: ' + tweetLon);
 
-			_.each(_.pairs(restaurantLookup), function(pair) {
+				_.each(_.pairs(restaurantLookup), function(pair) {
 
-				_.each(pair[1], function(restaurant) {
+					_.each(pair[1], function(restaurant) {
 
-					if (restaurant.coordinate.latitude && restaurant.coordinate.longitude) {
+						if (restaurant.coordinate && restaurant.coordinate.latitude && restaurant.coordinate.longitude) {
 
-						var restLat = restaurant.coordinate.latitude;
-						var restLon = restaurant.coordinate.longitude;
+							var restLat = restaurant.coordinate.latitude;
+							var restLon = restaurant.coordinate.longitude;
 
-						// console.log('restLat: ' + restLat + ' restLon: ' + restLon);
+							// console.log('restLat: ' + restLat + ' restLon: ' + restLon);
 
-						var distance = self.coordDistance(tweetLat, tweetLon, restLat, restLon);
+							var distance = self.coordDistance(tweetLat, tweetLon, restLat, restLon);
 
-						// console.log('distance: ' + distance);
+							// console.log('distance: ' + distance);
 
-						var ZERO_DIST = 25;
+							var score = Math.min(1, 1-(distance-self.dist)/distance);
 
-						var score = Math.min(1, 1-(distance-ZERO_DIST)/distance);
+							if (!scoresByRestaurant[restaurant.id]) {
+								scoresByRestaurant[restaurant.id] = 0;
+							}
+							scoresByRestaurant[restaurant.id] += score;
 
-						scores.push({
-							restaurantId : restaurant.id
-						  , score        : score
-						});
+						}
 
-					}
-
+					});
 				});
-			});
+			}
 
-		}
+		});
 
-		return scores;
+		var results = _.map(_.pairs(scoresByRestaurant), function(pair) {
+			return {
+				restaurantId : pair[0]
+			  , score        : pair[1]
+			};
+		});
+
+		return results;
 	},
 
 	coordDistance: function(lat1,lon1,lat2,lon2) {
 		var R = 6371; // Radius of the earth in km
 		var dLat = this.deg2rad(lat2-lat1);  // deg2rad below
 		var dLon = this.deg2rad(lon2-lon1); 
-		var a = 
-		Math.sin(dLat/2) * Math.sin(dLat/2) +
-		Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
-		Math.sin(dLon/2) * Math.sin(dLon/2)
-		; 
+		var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+				Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
+				Math.sin(dLon/2) * Math.sin(dLon/2)
+		;
 		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-		var d = R * c; // distance in km
-		return d * 1000; // distance in m
+		return R * c * 1000; // distance in m
 	}, 
 
 	deg2rad: function(deg) {
@@ -381,7 +399,7 @@ var DirectNameFoursquareRestuarantSignal = new Class(RestuarantSignal, {
 				var restKey = pair[0];
 				var score = pair[1];
 				result[restKey] = result[restKey] || 0;
-				result[restKey] += score*weigth;
+				result[restKey] += score*weight;
 			});
 		};
 
@@ -441,6 +459,16 @@ var Technique = new Class({
 
 });
 
+var RochesterTechnique = new Class(Technique, {
+
+	initialize: function(tweetApi) {
+		var fourDaysBack = new UserTimelineTweetExpansion(tweetApi, 4, 0);
+		var within25m = new GeoLocationRestuarantSignal(25);
+		this.callSuper(fourDaysBack, within25m);
+	}
+
+});
+
 // **************************
 // ******** PROGRAM ********
 // **************************
@@ -468,9 +496,6 @@ var runExperiment = function(tweets, techniques, restaurantLookup, restaurantsBy
 			restaurantScores = _.map(restaurantScores, function(rs) {
 				rs.restaurant = restaurantsById[rs.restaurantId];
 				rs.restaurant.url = 'http://www.yelp.com/biz/' + rs.restaurant.id;
-				rs.restaurantId = undefined;
-				rs.restaurant.id = undefined;
-				rs.restaurant.coordinate = undefined;
 				return rs;
 			});
 			var displayTweet = function(tweet) {
@@ -478,22 +503,44 @@ var runExperiment = function(tweets, techniques, restaurantLookup, restaurantsBy
 				return {
 					text : tweet.text
 				  , user : tweet.user.screen_name
+				  , loc  : tweet.coordinates ? tweet.coordinates.coordinates : undefined
 				  , date : date.substring(4, date.length - 15)
 				}
 			};
+			var displayScore = function(rs) {
+				return {
+					score      : rs.score
+				  , restaurant : {
+				  		name : rs.restaurant.name
+		  			  , url  : rs.restaurant.url
+				  }
+				}
+			}
 
 			return {
 				tweet            : displayTweet(tweet)
 			  , expandedTweetSet : _.map(expandedTweetSet, displayTweet)
 			  , scoreLookup      : scoreLookup
-			  , restaurantScores : restaurantScores
+			  , restaurantScores : _.map(restaurantScores, displayScore)
 			};
 
 		});
 
+		var withScores = [];
+		var withoutScores = [];
+		_.each(tweetOutput, function(output) {
+			if (output.restaurantScores.length > 0) {
+				withScores.push(output);
+			} 
+			else {
+				withoutScores.push(output);
+			}
+		});
+
 		return {
-			technique : tech.getInfo(),
-			results   : tweetOutput
+			technique     : tech.getInfo(),
+			withScores    : withScores,
+			withoutScores : withoutScores
 		};
 
 	});
@@ -508,7 +555,11 @@ var restaurantKeySelector = function(restaurant) {
 // preload all tweets
 var allTweets = JSON.parse(fs.readFileSync(TWEETS_FILE));
 var tweetsById = _.indexBy(allTweets, 'id');
-var tweetsByUser = _.groupBy(allTweets, function(tweet) {
+var extraTweets = JSON.parse(fs.readFileSync(TWEETS_EXTRA_FILE));
+_.each(extraTweets, function(tweet) {
+	tweetsById[tweet.id] = tweet;
+});
+var tweetsByUser = _.groupBy(_.values(tweetsById), function(tweet) {
 	return tweet.user.id;
 });
 
@@ -527,15 +578,68 @@ var tweetApi = {
 	}
 };
 
+// the 50 tweets to run
+var tweetIds = [ 
+  '399756894098583552',
+  '406740861402513408',
+  '411930421145128960',
+  '388856429844901888',
+  '388731852020023296',
+  '388875184968855552',
+  '389577971532443648',
+  '389406738681970688',
+  '388080314150440960',
+  '389595163124711424',
+  '391606408405209089',
+  '392650394465472512',
+  '400030770489614337',
+  '399950310443335680',
+  '399762896223469568',
+  '392773439129681920',
+  '399957072793436160',
+  '399735229105311744',
+  '400840301935620097',
+  '394894910228557824',
+  '395036327391268864',
+  '404605402060685312',
+  '413402335143288832',
+  '414419186858094592',
+  '389577992709873664',
+  '390292076463923200',
+  '389987857835626496',
+  '389944864689098752',
+  '389784043367067648',
+  '391291944682680321',
+  '392819478616354816',
+  '392818178730254336',
+  '394114287503171584',
+  '393987387506057216',
+  '390230026685513728',
+  '388916528017854464',
+  '388305869756456960',
+  '388343665090756608',
+  '388031141925515264',
+  '391326865560190976',
+  '392519292446851072',
+  '392102868922019840',
+  '391360858623729664',
+  '392777612265000960',
+  '393115425195585536',
+  '393524319533268992',
+  '393236859461312512',
+  '400045084642914304',
+  '399804808179105793',
+  '399762201252478976' 
+];
+var tweets = _.map(tweetIds, function(id) { return tweetsById[id]; });
+
 // the techniques to test
 var techniques = [
-    new Technique(new UserTimelineTweetExpansion(tweetApi, 7, 7), new DirectNameFoursquareRestuarantSignal())
-  , new Technique(new UserTimelineAndConvoTweetExpansion(tweetApi, 7, 7, 1), new GeoLocationRestuarantSignal())
-  , new Technique(new ConversationTweetExpansion(tweetApi, 3, 3), new NameMatchRestuarantSignal())
+	new RochesterTechnique(tweetApi)
+  , new Technique(new UserTimelineTweetExpansion(tweetApi, 7, 7), new DirectMentionRestuarantSignal())
+//  , new Technique(new UserTimelineAndConvoTweetExpansion(tweetApi, 7, 7, 1), new GeoLocationRestuarantSignal(25))
+//  , new Technique(new ConversationTweetExpansion(tweetApi, 3, 3), new NameMatchRestuarantSignal())
 ];
-
-// the 50 tweets to run
-var tweets = _.first(allTweets, 50);
 
 // fire away
 runExperiment(tweets, techniques, restaurantLookup, restaurantsById);

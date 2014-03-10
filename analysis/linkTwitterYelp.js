@@ -3,7 +3,6 @@
 // **************************
 
 var cheerio = require('cheerio');
-var lazy    = require('lazy');
 var request = require('request');
 
 // **************************

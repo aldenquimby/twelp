@@ -6,7 +6,6 @@ var _        = require('underscore');
 var proc     = require('./util/processUtil');
 var twitter  = require('./api/twitterApi');
 var database = require('./api/database');
-var lazy     = require('lazy');
 
 // **************************
 // ******** PROCESS *********
