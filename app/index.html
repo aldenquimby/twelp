@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8"/>
+	<title>TWELP</title>
+	<base target="_blank">
+	<link href="styles/bootstrap.css" rel="stylesheet"/>
+	<link href="styles/styles.css" rel="stylesheet"/>
+</head>
+
+<body>
+	<div class="container">
+
+	</div>
+</body>
+
+<!-- JS framework -->
+<script src="scripts/framework/jquery-1.10.2.min.js"></script>
+<script src="scripts/framework/underscore-min.js"></script>
+<script src="scripts/framework/backbone.js"></script>
+<script src="scripts/framework/mustache.js"></script>
+<script src="scripts/framework/jquery-mustache.js"></script>
+<script src="scripts/framework/moment.min.js"></script>
+
+<!-- JS views -->
+<script src="scripts/views/humanClassifyView.js"></script>
+
+<!-- templates -->
+<script id="technique" type="text/html">
+	<div class="col-md-6 technique">
+		<h3>{{expansion}} - {{signal}}</h3>
+		<div class="results"></div>
+	</div>
+</script>
+<script id="result" type="text/html">
+	<div class="start-tweet"></div>
+	<div class="score"></div>
+	<div class="tweet-set well"></div>
+</script>
+<script id="score" type="text/html">
+	<div class="row">
+		<div class="col-md-6">
+			<dl class="dl-horizontal details">
+			  <dt>Name</dt><dd><a href="{{restaurant.url}}">{{restaurant.name}}</a></dd>
+			  <dt>Score</dt><dd>{{score}}</dd>
+			</dl>
+		</div>
+	</div>
+</script>
+<script id="tweet" type="text/html">
+	<div class="row tweet">
+		<div class="col-md-6">
+			<dl class="dl-horizontal details">
+			  <dt>Tweet</dt><dd>{{text}}</dd>
+			  <dt>Date</dt><dd>{{date}}</dd>
+			  <dt>User</dt><dd>{{user}}</dd>
+			  <dt>Loc</dt><dd>{{location}}</dd>
+			</dl>
+		</div>
+	</div>
+</script>
+
+<!-- data -->
+<script src="../private/link_results.json"></script>
+
+<!-- app start -->
+<script>
+	$(function () {
+		$.Mustache.addFromDom();
+		new HumanClassifyView({el: $('.container')});
+	});
+</script>
+
+</html>
