@@ -5,7 +5,7 @@
 var proc     = require('../util/processUtil'); 
 var database = require('../api/database'); 
 var fs       = require('fs');
-var _        = require('underscore');
+var _        = require('lodash');
 
 // ************************
 // ******** TWEETS ********

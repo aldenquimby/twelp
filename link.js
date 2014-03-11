@@ -2,7 +2,7 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var _      = require('underscore');
+var _      = require('lodash');
 var Class  = require('jsclass/src/core').Class;
 var proc   = require('./util/processUtil');
 var fs     = require('fs');

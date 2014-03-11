@@ -5,7 +5,7 @@
 var proc = require('../util/processUtil'); 
 var fs   = require('fs');
 var lazy = require('lazy');
-var _    = require('underscore');
+var _    = require('lodash');
 
 // **************************
 // ******** PROGRAM ********

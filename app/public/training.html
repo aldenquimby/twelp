@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8"/>
+	<title>TWELP</title>
+	<base target="_blank">
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="/less/flat-ui.css">
+    <link rel="stylesheet" href="/less/index.css">
+    <link rel="stylesheet" href="/less/training.css">
+</head>
+
+<body>
+	<div class="container"></div>
+</body>
+
+<!-- JS framework -->
+<script type="text/javascript" src="/javascripts/framework/jquery-2.1.0.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/lodash.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/moment.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/backbone-min.js"></script>  
+<script type="text/javascript" src="/javascripts/framework/mustache.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/jquery.mustache.min.js"></script>
+
+<!-- JS views -->
+<script src="/javascripts/training/trainingView.js"></script>
+
+<!-- app start -->
+<script>
+	$(function () {
+		$.Mustache.addFromDom();
+
+		$.getJSON('/link_results', function(data) {
+			new TrainingView({el: $('.container'), data:data});
+		});
+	});
+</script>
+
+<!-- templates -->
+<script id="technique" type="text/html">
+	<div class="col-md-6 technique">
+		<h3>{{expansion}} - {{signal}}</h3>
+		<div class="results"></div>
+	</div>
+</script>
+
+<script id="result" type="text/html">
+	<div class="start-tweet"></div>
+	<div class="score"></div>
+	<div class="tweet-set well"></div>
+</script>
+
+<script id="score" type="text/html">
+	<div class="row">
+		<div class="col-md-6">
+			<dl class="dl-horizontal details">
+			  <dt>Name</dt><dd><a href="{{restaurant.url}}">{{restaurant.name}}</a></dd>
+			  <dt>Score</dt><dd>{{score}}</dd>
+			</dl>
+		</div>
+	</div>
+</script>
+
+<script id="tweet" type="text/html">
+	<div class="row tweet">
+		<div class="col-md-6">
+			<dl class="dl-horizontal details">
+			  <dt>Tweet</dt><dd>{{text}}</dd>
+			  <dt>Date</dt><dd>{{date}}</dd>
+			  <dt>User</dt><dd>{{user}}</dd>
+			  <dt>Loc</dt><dd>{{location}}</dd>
+			</dl>
+		</div>
+	</div>
+</script>
+
+</html>

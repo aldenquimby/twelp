@@ -2,7 +2,7 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var _        = require('underscore');
+var _        = require('lodash');
 var proc     = require('./util/processUtil');
 var twitter  = require('./api/twitterApi');
 var database = require('./api/database');

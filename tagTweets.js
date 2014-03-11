@@ -3,7 +3,7 @@
 // **************************
 
 var proc     = require('./util/processUtil');
-var _        = require('underscore');
+var _        = require('lodash');
 var database = require('./api/database'); 
 
 // **************************

@@ -2,7 +2,7 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var _        = require('underscore');
+var _        = require('lodash');
 var fuzzy    = require('fuzzy');
 var fs       = require('fs');
 var proc     = require('./util/processUtil');

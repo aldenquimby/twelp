@@ -2,7 +2,7 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var _       = require('underscore');
+var _       = require('lodash');
 var cheerio = require('cheerio');
 var lazy    = require('lazy');
 var fs      = require('fs');

@@ -9,7 +9,7 @@ var city = process.argv.length > 3 ? process.argv[3] : 'NYC';
 // ****** DEPENDENCIES ******
 // **************************
 
-var _       = require('underscore');
+var _       = require('lodash');
 var Factual = require('factual-api');
 var keys    = require('../private/keys');
 var factual = new Factual(keys.FACTUAL_KEY, keys.FACTUAL_SECRET);

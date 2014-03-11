@@ -1,5 +1,5 @@
 
-var _ = require('underscore');
+var _ = require('lodash');
 var schema = require('./schema');
 var proc = require('../util/processUtil');
 var keys = require('../private/keys');

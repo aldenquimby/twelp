@@ -1,4 +1,4 @@
-var _ = require('underscore');
+var _ = require('lodash');
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = mongoose.Schema.ObjectId;

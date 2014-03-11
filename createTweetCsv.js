@@ -2,7 +2,7 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var _        = require('underscore');
+var _        = require('lodash');
 var database = require('./api/database');
 var schema   = require('./api/schema');
 var json2csv = require('json2csv');

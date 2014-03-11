@@ -4,7 +4,7 @@
 
 var twitter  = require('./api/twitterApi');
 var database = require('./api/database');
-var _        = require('underscore');
+var _        = require('lodash');
 var schema   = require('./api/schema');
 var proc     = require('./util/processUtil');
 
