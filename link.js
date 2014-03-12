@@ -14,7 +14,7 @@ var fzy    = require('./fuzzyMatching');
 // **************************
 
 var TWEETS_FILE        = './private/tweets-20140227T030314518Z.json';
-var TWEETS_EXTRA_FILE  = './private/extra-tweets-20140228T193033464Z.json';
+var TWEETS_EXTRA_FILE  = './private/extra-tweets-20140312T034623917Z.json';
 var YELP_MINI_BIZ_FILE = './private/yelp_businesses.json';
 
 // **************************
@@ -40,23 +40,23 @@ var TweetExpansion = new Class({
 
 var UserTimelineTweetExpansion = new Class(TweetExpansion, {
 
-    initialize: function(tweetApi, timeBack, timeForward) {
+    initialize: function(tweetApi, hoursBack, hoursFwd) {
     	this.callSuper(tweetApi);
-        this.timeBack = timeBack;
-        this.timeForward = timeForward;
+        this.hoursBack = hoursBack;
+        this.hoursFwd = hoursFwd;
     },
 
     // returns: the name of the technique
 	getName: function() {
-		return 'User Timeline (back ' + this.timeBack + ', forward ' + this.timeForward + ')';
+		return 'User Timeline (back ' + this.hoursBack + ', forward ' + this.hoursFwd + ')';
 	},
 
 	// summary: expand tweet into set of relevant tweets
 	// returns: list of tweets
 	expandTweet: function(tweet) {
 
-		var startDate = moment(tweet.created_at).subtract('days', this.timeBack);
-		var endDate = moment(tweet.created_at).add('days', this.timeForward);
+		var startDate = moment(tweet.created_at).subtract('hours', this.hoursBack);
+		var endDate = moment(tweet.created_at).add('hours', this.hoursFwd);
 
 		var userTweets = this.tweetApi.getTweetsByUser(tweet.user.id);
 
@@ -109,8 +109,8 @@ var ConversationTweetExpansion = new Class(TweetExpansion, {
 
 var UserTimelineAndConvoTweetExpansion = new Class(TweetExpansion, {
 
-    initialize: function(tweetApi, timeBack, timeForward, numBack) {
-        this.timelineExpansion = new UserTimelineTweetExpansion(tweetApi, timeBack, timeForward);
+    initialize: function(tweetApi, hoursBack, hoursFwd, numBack) {
+        this.timelineExpansion = new UserTimelineTweetExpansion(tweetApi, hoursBack, hoursFwd);
         this.convoExpansion = new ConversationTweetExpansion(tweetApi, numBack, 0);
     },
 
@@ -187,7 +187,6 @@ var RestuarantSignal = new Class({
 			var score = scoreLookup[pair[0]];
 			if (score) {
 				_.each(pair[1], function(restaurant) {
-					if (!restaurant.id) { console.log(restaurant); }
 					results.push({
 						restaurantId : restaurant.id,
 						score        : score
@@ -291,22 +290,22 @@ var FoursquareRestuarantSignal = new Class(RestuarantSignal, {
 
 var GeoLocationRestuarantSignal = new Class(RestuarantSignal, {
 
-	initialize: function(dist){
+	initialize : function(dist) {
 		this.dist = dist;
 	},
 
     // returns: the name of the technique
-	getName: function() {
+	getName : function() {
 		return 'geo-location';
 	},
 
-	getScore: function(tweets, restaurantKey) {
+	getScore : function(tweets, restaurantKey) {
 		return 0;
 	},
 
 	// summary: scale signal based on location's distinace to twitter user
 	// returns: list of { restaurantId, score }
-	handleChainRestaurants: function(tweet, expandedTweetSet, restaurantLookup, scoreLookup) {
+	handleChainRestaurants : function(tweet, expandedTweetSet, restaurantLookup, scoreLookup) {
 		var self = this;
 
 		var scoresByRestaurant = {};
@@ -318,8 +317,6 @@ var GeoLocationRestuarantSignal = new Class(RestuarantSignal, {
 				var tweetLon = twt.coordinates.coordinates[0];
 				var tweetLat = twt.coordinates.coordinates[1];
 
-				// console.log('tweetLat: ' + tweetLat + ' tweetLon: ' + tweetLon);
-
 				_.each(_.pairs(restaurantLookup), function(pair) {
 
 					_.each(pair[1], function(restaurant) {
@@ -329,19 +326,14 @@ var GeoLocationRestuarantSignal = new Class(RestuarantSignal, {
 							var restLat = restaurant.coordinate.latitude;
 							var restLon = restaurant.coordinate.longitude;
 
-							// console.log('restLat: ' + restLat + ' restLon: ' + restLon);
-
 							var distance = self.coordDistance(tweetLat, tweetLon, restLat, restLon);
 
-							// console.log('distance: ' + distance);
-
-							var score = Math.min(1, 1-(distance-self.dist)/distance);
-
-							if (!scoresByRestaurant[restaurant.id]) {
-								scoresByRestaurant[restaurant.id] = 0;
+							if (distance < self.dist) {
+								if (!scoresByRestaurant[restaurant.id]) {
+									scoresByRestaurant[restaurant.id] = 0;
+								}								
+								scoresByRestaurant[restaurant.id] += 1;
 							}
-							scoresByRestaurant[restaurant.id] += score;
-
 						}
 
 					});
@@ -417,15 +409,15 @@ var DirectNameFoursquareRestuarantSignal = new Class(RestuarantSignal, {
 
 var Technique = new Class({
 
-    initialize: function(exapnsion, signal) {
-        this.exapnsion = exapnsion;
+    initialize: function(expansion, signal) {
+        this.expansion = expansion;
         this.signal = signal;
     },
 
     // returns: the technique info
 	getInfo: function() {
 		return {
-			expansion : this.exapnsion.getName(),
+			expansion : this.expansion.getName(),
 			signal    : this.signal.getName()
 		};
 	},
@@ -433,7 +425,7 @@ var Technique = new Class({
 	// summary: expand tweet into set of relevant tweets
 	// returns: list of tweets
 	expandTweet: function(tweet) {
-		return this.exapnsion.expandTweet(tweet);
+		return this.expansion.expandTweet(tweet);
 	},
 
 	// summary: assign a score [0, 1] for each restaurant based on the tweet and/or expandedTweetSet
@@ -452,9 +444,12 @@ var Technique = new Class({
 	// summary: final filter, possibly remove weak restaurant signals
 	// returns: list of { restaurantId, score }
 	thresholdFilter: function(restaurantScores) {
-		return _.filter(restaurantScores, function(rs) {
+		var filtered = _.filter(restaurantScores, function(rs) {
 			return rs.score > 0.05;
 		});
+
+		// just the top two for now
+		return _.first(filtered, 2);
 	}
 
 });
@@ -462,9 +457,14 @@ var Technique = new Class({
 var RochesterTechnique = new Class(Technique, {
 
 	initialize: function(tweetApi) {
-		var fourDaysBack = new UserTimelineTweetExpansion(tweetApi, 4, 0);
+		var fourDaysBack = new UserTimelineTweetExpansion(tweetApi, 100, 0);
 		var within25m = new GeoLocationRestuarantSignal(25);
 		this.callSuper(fourDaysBack, within25m);
+	},
+
+	// no threshold here, just the geo-location
+	thresholdFilter: function(restaurantScores) {
+		return restaurantScores;
 	}
 
 });
@@ -486,18 +486,12 @@ var runExperiment = function(tweets, techniques, restaurantLookup, restaurantsBy
 
 			var restaurantScores = tech.handleChainRestaurants(tweet, expandedTweetSet, restaurantLookup, scoreLookup);
 
-			restaurantScores = tech.thresholdFilter(restaurantScores);
-
 			restaurantScores = _.sortBy(restaurantScores, function(rs) {
 				return -rs.score;
 			});
 
-			// tweak for display
-			restaurantScores = _.map(restaurantScores, function(rs) {
-				rs.restaurant = restaurantsById[rs.restaurantId];
-				rs.restaurant.url = 'http://www.yelp.com/biz/' + rs.restaurant.id;
-				return rs;
-			});
+			restaurantScores = tech.thresholdFilter(restaurantScores);
+
 			var displayTweet = function(tweet) {
 				var date = new Date(tweet.created_at).toLocaleString();
 				return {
@@ -508,12 +502,11 @@ var runExperiment = function(tweets, techniques, restaurantLookup, restaurantsBy
 				}
 			};
 			var displayScore = function(rs) {
+				var restaurant = restaurantsById[rs.restaurantId];
 				return {
-					score      : rs.score
-				  , restaurant : {
-				  		name : rs.restaurant.name
-		  			  , url  : rs.restaurant.url
-				  }
+					score : rs.score,
+				  	name  : restaurant.name,
+		  			url   : 'http://www.yelp.com/biz/' + restaurant.id
 				}
 			}
 
@@ -636,7 +629,7 @@ var tweets = _.map(tweetIds, function(id) { return tweetsById[id]; });
 // the techniques to test
 var techniques = [
 	new RochesterTechnique(tweetApi)
-  , new Technique(new UserTimelineTweetExpansion(tweetApi, 7, 7), new DirectMentionRestuarantSignal())
+  , new Technique(new UserTimelineTweetExpansion(tweetApi, 7*24, 7*24), new DirectMentionRestuarantSignal())
 //  , new Technique(new UserTimelineAndConvoTweetExpansion(tweetApi, 7, 7, 1), new GeoLocationRestuarantSignal(25))
 //  , new Technique(new ConversationTweetExpansion(tweetApi, 3, 3), new NameMatchRestuarantSignal())
 ];

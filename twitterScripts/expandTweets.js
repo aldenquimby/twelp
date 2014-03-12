@@ -104,6 +104,8 @@ var expandUser = function(tweets) {
       _.each(backwards, function(t) {
         t.tags.push('user');
         t.tags.push('user-' + tweet.user.id);
+        // screen name not set on result, so add it
+        t.user.screen_name = tweet.user.screen_name;
       });
 
       fs.appendFile(toFile, JSON.stringify(backwards) + "\n", function(err) {
@@ -118,6 +120,8 @@ var expandUser = function(tweets) {
       _.each(forwards, function(t) {
         t.tags.push('user');
         t.tags.push('user-' + tweet.user.id);
+        // screen name not set on result, so add it
+        t.user.screen_name = tweet.user.screen_name;
       });
 
       fs.appendFile(toFile, JSON.stringify(forwards) + "\n", function(err) {
@@ -136,6 +140,7 @@ database.runWithConn(function() {
     if (err) { proc.bail('Failed to find tweets', err); }
 
     expandUser(tweets);
+    // expandConvo(tweets);
 
   });
 

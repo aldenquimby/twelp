@@ -3,7 +3,7 @@ var keys = require('../private/keys');
 var schema = require('./schema');
 var twit = require('twit');
 var _    = require('lodash');
-var TWITTER_KEYS = keys.TWITTER[0];
+var TWITTER_KEYS = keys.TWITTER[1];
 var twitter = new twit({
   consumer_key: TWITTER_KEYS.CONSUMER_KEY,
   consumer_secret: TWITTER_KEYS.CONSUMER_SECRET,

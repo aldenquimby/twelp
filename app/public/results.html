@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8"/>
+	<title>TWELP</title>
+	<base target="_blank">
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="/less/flat-ui.css">
+    <link rel="stylesheet" href="/less/index.css">
+    <link rel="stylesheet" href="/less/results.css">
+</head>
+
+<body>
+	<div class="container"></div>
+</body>
+
+<!-- JS framework -->
+<script type="text/javascript" src="/javascripts/framework/jquery-2.1.0.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/lodash.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/moment.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/backbone-min.js"></script>  
+<script type="text/javascript" src="/javascripts/framework/mustache.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/jquery.mustache.min.js"></script>
+
+<!-- JS views -->
+<script src="/javascripts/training/resultsView.js"></script>
+
+<!-- app start -->
+<script>
+
+	$(function () {
+		$.Mustache.addFromDom();
+
+		$.getJSON('/link_results' + window.location.search, function(data) {
+			new ResultsView({el: $('.container'), data:data});
+		});
+	});
+</script>
+
+<!-- templates -->
+<script id="technique" type="text/html">
+
+</script>
+
+</html>

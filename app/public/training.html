@@ -28,10 +28,11 @@
 
 <!-- app start -->
 <script>
+
 	$(function () {
 		$.Mustache.addFromDom();
 
-		$.getJSON('/link_results', function(data) {
+		$.getJSON('/link_results' + window.location.search, function(data) {
 			new TrainingView({el: $('.container'), data:data});
 		});
 	});
@@ -39,38 +40,55 @@
 
 <!-- templates -->
 <script id="technique" type="text/html">
-	<div class="col-md-6 technique">
-		<h3>{{expansion}} - {{signal}}</h3>
-		<div class="results"></div>
+	<div class="technique">
+		<span class="humanLabel" data-label="NO">
+			<a class="btn btn-block btn-lg btn-inverse">NO</a>
+		</span>
+		<span class="humanLabel" data-label="YES">
+			<a class="btn btn-block btn-lg btn-primary">YES</a>
+		</span>
+		<h3>{{expansion}} + {{signal}}</h3>
+		<div class="start-tweet"></div>
+		<div class="score">
+			<div class="row">
+				<dl class="dl-horizontal">
+				  <dt>Restaurants</dt>
+				  <dd></dd>
+				</dl>
+			</div>
+		</div>
+		<div class="tweet-set well"></div>
 	</div>
-</script>
-
-<script id="result" type="text/html">
-	<div class="start-tweet"></div>
-	<div class="score"></div>
-	<div class="tweet-set well"></div>
 </script>
 
 <script id="score" type="text/html">
-	<div class="row">
-		<div class="col-md-6">
-			<dl class="dl-horizontal details">
-			  <dt>Name</dt><dd><a href="{{restaurant.url}}">{{restaurant.name}}</a></dd>
-			  <dt>Score</dt><dd>{{score}}</dd>
-			</dl>
-		</div>
-	</div>
+	<span class="rest-score"><a href="{{url}}">{{name}}</a> ({{score}})</span>
 </script>
 
 <script id="tweet" type="text/html">
 	<div class="row tweet">
-		<div class="col-md-6">
-			<dl class="dl-horizontal details">
-			  <dt>Tweet</dt><dd>{{text}}</dd>
-			  <dt>Date</dt><dd>{{date}}</dd>
-			  <dt>User</dt><dd>{{user}}</dd>
-			  <dt>Loc</dt><dd>{{location}}</dd>
-			</dl>
+		<dl class="dl-horizontal">
+		  <dt>{{date}}</dt>
+		  <dd>
+		  	<strong>
+			  {{#user}}
+			  	{{user}}
+			  {{/user}}
+			  {{#loc}}
+			  	[ {{loc}} ]
+			  {{/loc}}
+		  	</strong>
+		  	{{text}}
+		  </dd>
+		</dl>
+	</div>
+</script>
+
+<script id="complete" type="text/html">
+	<h1>All Done!</h1>
+	<div class="row">
+		<div class="col-md-3">
+			<a class="btn btn-block btn-hg btn-primary reset">Reset Labels?</a>
 		</div>
 	</div>
 </script>
