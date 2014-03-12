@@ -16,12 +16,12 @@ var OtherView = Backbone.View.extend({
 		self.$el.html('');
 
 		_.each(self.data, function(tech) {
+			var tech = tech;
 			var technique = self.$el.mustache('technique', tech);
 
 			_.each(tech.withoutScores, function(result) {
-				var tweetSetHtml = "";
-				var tweetViews = _.map(result.expandedTweetSet, self.tweetToView);
-				technique.find('.tweet-sets').mustache('tweet-set', {tweets: tweetViews});
+				var tweetViews = _.map(_.first(result.expandedTweetSet, 1), self.tweetToView);
+				technique.find('.tweet-sets').mustache('tweet-set', {tweets:tweetViews});
 			});
 
 		});

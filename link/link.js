@@ -16,7 +16,10 @@ var Technique = require('./technique').Technique;
 // **************************
 
 var TWEETS_FILE        = './private/tweets-20140227T030314518Z.json';
-var TWEETS_EXTRA_FILE  = './private/extra-tweets-20140312T034623917Z.json';
+var EXTRA_TWEET_FILES  = [
+	'./private/extra-tweets-20140312T034623917Z.json',
+	'./private/extra-tweets-20140312T171055700Z.json',
+];
 var YELP_MINI_BIZ_FILE = './private/yelp_businesses-20140312T131153145Z.json';
 
 // **************************
@@ -118,9 +121,11 @@ var restaurantKeySelector = function(restaurant) {
 // preload all tweets
 var allTweets = JSON.parse(fs.readFileSync(TWEETS_FILE));
 var tweetsById = _.indexBy(allTweets, 'id');
-var extraTweets = JSON.parse(fs.readFileSync(TWEETS_EXTRA_FILE));
-_.each(extraTweets, function(tweet) {
-	tweetsById[tweet.id] = tweet;
+_.each(EXTRA_TWEET_FILES, function(file) {
+	var extraTweets = JSON.parse(fs.readFileSync(file));
+	_.each(extraTweets, function(tweet) {
+		tweetsById[tweet.id] = tweet;
+	});
 });
 var tweetsByUser = _.groupBy(_.values(tweetsById), function(tweet) {
 	return tweet.user.id;
@@ -141,7 +146,7 @@ var tweetApi = {
 	}
 };
 
-// the 50 tweets to run
+// the tweets to run
 var tweetIds = [ 
   '399756894098583552',
   '406740861402513408',
@@ -192,17 +197,33 @@ var tweetIds = [
   '393236859461312512',
   '400045084642914304',
   '399804808179105793',
-  '399762201252478976' 
+  '399762201252478976',
+
+  '391360858623729664',
+  '404398543990820864',
+  '412704735100420096',
+  '412331497161752577',
+  '412005092913475585',
+  '414581403847000064',
+  '428990485936353280',
+  '431626916526055424',
+  '431473811293478912',
+  '428479719672016896',
+  '432589718317170688',
+  '432762672908488704',
+  '432593558856822784',
+  '436537272545325056',
+  '436681039722082304',
 ];
 var tweets = _.map(tweetIds, function(id) { return tweetsById[id]; });
 
 // the techniques to test
 var techniques = [
-//	new RochesterTechnique(tweetApi),
+	new RochesterTechnique(tweetApi),
 //	new Technique(new exp.UserTimelineTweetExpansion(tweetApi, 7*24, 7*24), 
 //					new sig.DirectMentionRestuarantSignal()),
 	new Technique(new exp.UserTimelineAndConvoTweetExpansion(tweetApi, 7*24, 7*24, 1), 
-		new sig.NameMatchRestuarantSignal()),
+		new sig.DirectMentionRestuarantSignal()),
 //	new Technique(new exp.ConversationTweetExpansion(tweetApi, 3, 3), 
 //					new sig.NameMatchRestuarantSignal()),
 ];

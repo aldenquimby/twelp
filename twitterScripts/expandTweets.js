@@ -64,9 +64,28 @@ var tweetsToExpand = [
   '393236859461312512',
   '400045084642914304',
   '399804808179105793',
-  '399762201252478976' 
+  '399762201252478976', 
 ];
 
+
+// tweets with direct mentions
+tweetsToExpand = [
+  "391360858623729664",
+  "404398543990820864",
+  "412704735100420096",
+  "412331497161752577",
+  "412005092913475585",
+  "414581403847000064",
+  "428990485936353280",
+  "431626916526055424",
+  "431473811293478912",
+  "428479719672016896",
+  "432589718317170688",
+  "432762672908488704",
+  "432593558856822784",
+  "436537272545325056",
+  "436681039722082304",
+];
 
 var expandConvo = function(tweets) {
 
@@ -99,7 +118,7 @@ var expandUser = function(tweets) {
   _.each(tweets, function(tweet) {
 
     twitter.userTimeline(tweet.user.id, null, tweet.id, function(err2, backwards) {
-      if (err2) { proc.bail('Backward tracking failed', err2); }
+      if (err2) { return console.log('Backward tracking failed ' + tweet.user.id, err2); }
 
       _.each(backwards, function(t) {
         t.tags.push('user');
@@ -115,7 +134,7 @@ var expandUser = function(tweets) {
     });
 
     twitter.userTimeline(tweet.user.id, tweet.id, null, function(err2, forwards) {
-      if (err2) { proc.bail('Forward tracking failed', err2); }
+      if (err2) { return console.log('Forward tracking failed ' + tweet.user.id, err2); }
 
       _.each(forwards, function(t) {
         t.tags.push('user');
@@ -140,7 +159,7 @@ database.runWithConn(function() {
     if (err) { proc.bail('Failed to find tweets', err); }
 
     expandUser(tweets);
-    // expandConvo(tweets);
+    expandConvo(tweets);
 
   });
 
