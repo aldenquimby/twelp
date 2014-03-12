@@ -12,7 +12,15 @@
 </head>
 
 <body>
-	<div class="container"></div>
+	<div class="container">
+		<h1>All Done!</h1>
+		<div class="row">
+			<div class="col-md-3">
+				<a class="btn btn-block btn-hg btn-primary reset">Reset Labels?</a>
+			</div>
+		</div>
+
+	</div>
 </body>
 
 <!-- JS framework -->
@@ -40,7 +48,19 @@
 
 <!-- templates -->
 <script id="technique" type="text/html">
-
+	<div class="row">
+		<div class="technique">
+			<h3>{{technique.expansion}} + {{technique.signal}}</h3>
+			<div class="col-md-6 well">
+				<dl class="dl-horizontal">
+				{{#results}}
+					<dt>{{label}}</dt>
+					<dd>{{count}}</dd>
+				{{/results}}
+				</dl>
+			</div>
+		</div>
+	</div>
 </script>
 
 </html>

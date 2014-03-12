@@ -2,7 +2,7 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var proc = require('../util/processUtil'); 
+var proc = require('../util/process'); 
 var fs   = require('fs');
 var lazy = require('lazy');
 var _    = require('lodash');

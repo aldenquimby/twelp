@@ -6,7 +6,7 @@ var _        = require('lodash');
 var database = require('./api/database');
 var schema   = require('./api/schema');
 var log      = require('./util/log');
-var proc     = require('./util/processUtil');
+var proc     = require('./util/process');
 
 // **************************
 // ********* LABEL **********

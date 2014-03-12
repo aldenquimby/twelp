@@ -2,7 +2,7 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var proc     = require('./util/processUtil');
+var proc     = require('./util/process');
 var _        = require('lodash');
 var database = require('./api/database'); 
 

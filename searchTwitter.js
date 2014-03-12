@@ -5,7 +5,7 @@
 var _       = require('lodash');
 var twitter = require('./api/twitterApi');
 var logger  = require('./util/log').getFileLogger('poison-search');
-var proc    = require('./util/processUtil');
+var proc    = require('./util/process');
 
 // **************************
 // ******** PROCESS *********

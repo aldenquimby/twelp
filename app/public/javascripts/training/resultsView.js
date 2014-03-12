@@ -1,7 +1,7 @@
 var ResultsView = Backbone.View.extend({
 
 	events : {
-		
+		"click .reset" : "reset"
 	},
 
 	initialize : function() {
@@ -13,18 +13,42 @@ var ResultsView = Backbone.View.extend({
 	render : function () {
 		var self = this;
 
-		self.$el.html('');
+		var techResults = _.map(self.data, function(tech) {
+			var labelCounts = _.countBy(tech.withScores, 'label');
 
-		var technique = self.$el.mustache('technique', self.currTech.technique);
+			var results = _.map(_.pairs(labelCounts), function(pair) {
+				return {
+					label : pair[0],
+					count : pair[1]
+				};
+			});
 
-		technique.find('.start-tweet').mustache('tweet', self.tweetToView(self.currResult.tweet));
-		technique.find('.score').find('dd').mustache('score', self.currResult.restaurantScores);
-
-		var tweetSetHtml = "";
-		_.each(self.currResult.expandedTweetSet, function(tweet) {
-			tweetSetHtml += $.Mustache.render('tweet', self.tweetToView(tweet));
+			return {
+				technique : tech.technique,
+				results   : results
+			};
 		});
-		technique.find('.tweet-set').html(tweetSetHtml);
+
+		self.$el.mustache('technique', techResults);
 	},
+
+	reset : function(e) {
+		e.preventDefault();
+		var self = this;
+		if (confirm('Are you sure you want to reset the labels for this link result?')) {
+			$.ajax({
+			    url: '/training' + window.location.search,
+			    type: 'PUT',
+			    success: function(data) {
+					if (!data.success) {
+						return alert('failed!');
+					}
+
+			    	// switch to training view
+			    	window.location.href = '/training.html' + window.location.search;
+			    }
+			});
+		}
+	}
 
 });

@@ -3,7 +3,7 @@
 // **************************
 
 var _        = require('lodash');
-var proc     = require('./util/processUtil');
+var proc     = require('./util/process');
 var twitter  = require('./api/twitterApi');
 var database = require('./api/database');
 

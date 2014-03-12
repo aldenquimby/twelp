@@ -5,7 +5,7 @@
 var _        = require('lodash');
 var fuzzy    = require('fuzzy');
 var fs       = require('fs');
-var proc     = require('./util/processUtil');
+var proc     = require('./util/process');
 var dmpmod   = require('./util/diff_match_patch');
 var dmp      = new dmpmod.diff_match_patch();
 var FuzzySet = require('fuzzyset.js');
@@ -25,14 +25,32 @@ var getBizNameWordCounts = function(uniqueBizNames, shouldLog) {
 	return bizNameWordCount;
 };
 
-exports.fuzzyMatch = function(bizs, tweets) {
+var cleanTweet = function(text) {
+    var URL_REGEX = "http://[a-z0-9].[a-z]{2,3}/[a-zA-Z0-9]+";
+    var MENTION_REGEX = "@[^ ]+ ";
+    var RT_START = "RT ";
 
-	var uniqueBizNames = _.uniq(_.pluck(bizs, 'name'));
+    // remove links
+    text = text.replace(new RegExp(URL_REGEX, 'g'), "");
+
+    // remove @ mentions
+    text = text.replace(new RegExp(MENTION_REGEX, 'g'), "");
+
+    // remove RT
+    if (text.indexOf(RT_START) == 0) {
+        text = text.substring(RT_START.length);
+    }
+
+    return text;
+};
+
+exports.fuzzyMatch = function(uniqueBizNames, tweets) {
+
 	var bizNameWordCount = getBizNameWordCounts(uniqueBizNames);
 	var maxCount = _.max(_.values(bizNameWordCount));
 	var avgCount = _.reduce(_.values(bizNameWordCount), function(memo, num){ return memo + num; }, 0) / _.values(bizNameWordCount).length;
 
-	var tweetText = _.pluck(tweets, 'text');
+	var tweetText = _.map(tweets, function(t) { return cleanTweet(t.text); });
 
 	var scoresByName = {};
 
@@ -66,7 +84,6 @@ exports.fuzzyMatch = function(bizs, tweets) {
 			});
 
 			var REQUIRED_PART_SCORE_CUTOFF = 20;
-			var FULL_SCORE_CUTOFF = 200;
 
 			_.each(requiredParts, function(part) {
 				var wordCount = bizNameWordCount[part];
@@ -81,7 +98,7 @@ exports.fuzzyMatch = function(bizs, tweets) {
 						scoreByIndex[result.index].required.push(0);
 					}
 					else {
-						var wordScale = (20 - wordCount) / 20;
+						var wordScale = (REQUIRED_PART_SCORE_CUTOFF - wordCount) / REQUIRED_PART_SCORE_CUTOFF;
 						scoreByIndex[result.index].required.push(result.score * wordScale);
 					}
 				});
@@ -97,12 +114,9 @@ exports.fuzzyMatch = function(bizs, tweets) {
 				return { tweet : tweetText[pair[0]], score : score };
 			});
 
-			tweetScores = _.filter(tweetScores, function(score) {
-				return score.score > FULL_SCORE_CUTOFF;
-			});
-
-			scoresByName[bizName] = tweetScores;
-
+			if (tweetScores.length > 0) {
+				scoresByName[bizName] = tweetScores;
+			}
 		}
 
 	});
@@ -119,7 +133,7 @@ var YELP_BIZ_FILE = './private/yelp_businesses.json';
 var tweets = JSON.parse(fs.readFileSync(TWEETS_FILE));
 var bizs = JSON.parse(fs.readFileSync(YELP_BIZ_FILE));
 
-var scoresByName = exports.fuzzyMatch(bizs, tweets);
+var scoresByName = exports.fuzzyMatch(_.uniq(_.pluck(bizs, 'name')), tweets);
 
 _.each(_.pairs(scoresByName), function(pair) {
 

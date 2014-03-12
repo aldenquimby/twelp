@@ -24,7 +24,7 @@
 <script type="text/javascript" src="/javascripts/framework/jquery.mustache.min.js"></script>
 
 <!-- JS views -->
-<script src="/javascripts/training/trainingView.js"></script>
+<script src="/javascripts/training/otherView.js"></script>
 
 <!-- app start -->
 <script>
@@ -33,7 +33,7 @@
 		$.Mustache.addFromDom();
 
 		$.getJSON('/link_results' + window.location.search, function(data) {
-			new TrainingView({el: $('.container'), data:data});
+			new OtherView({el: $('.container'), data:data});
 		});
 	});
 </script>
@@ -41,59 +41,31 @@
 <!-- templates -->
 <script id="technique" type="text/html">
 	<div class="technique">
-		<span class="humanLabel" data-label="NO">
-			<a class="btn btn-block btn-lg btn-inverse">NO</a>
-		</span>
-		<span class="humanLabel" data-label="MAYBE">
-			<a class="btn btn-block btn-lg btn-default">MAYBE</a>
-		</span>
-		<span class="humanLabel" data-label="YES">
-			<a class="btn btn-block btn-lg btn-primary">YES</a>
-		</span>
 		<h3>{{technique.expansion}} + {{technique.signal}}</h3>
-		<div class="score">
-			<div class="row">
-				<dl class="dl-horizontal">
-				  <dt>Restaurants</dt>
-				  <dd></dd>
-				</dl>
-			</div>
-		</div>
-		{{#mapUrl}}
-		<div class="map">
-			<div class="row">
-				<dl class="dl-horizontal">
-					<dt>Full Map</dt>
-					<dd><a href="{{mapUrl}}">Click here</a></dd>
-				</dl>
-		</div>
-		{{/mapUrl}}
-		<div class="tweet-set well"></div>
+		<div class="tweet-sets"></div>
 	</div>
 </script>
 
-<script id="score" type="text/html">
-	<span class="rest-score">
-		{{score}}: <a href="{{url}}"><strong>{{name}}</strong></a>
-		{{#loc}}
-			<a href="{{locUrl}}">[{{loc}}]</a>
-		{{/loc}}
-	</span>
-</script>
-
 <script id="tweet" type="text/html">
-	<div class="row tweet {{css}}">
-		<dl class="dl-horizontal">
-		  <dt>{{date}}</dt>
-		  <dd>
-		  	<strong>{{user}}</strong>
-			{{#loc}}
-				<a href="{{locUrl}}">[{{loc}}]</a>
-			{{/loc}}
-			:
-		  	{{text}}
-		  </dd>
-		</dl>
+	<div class="tweet-set well">
+	{{#tweets}}
+		<div class="row tweet">
+			<dl class="dl-horizontal">
+			  <dt>{{date}}</dt>
+			  <dd>
+			  	<strong>
+				  {{#user}}
+				  	{{user}}
+				  {{/user}}
+			  	</strong>
+				{{#loc}}
+					<a href="{{locUrl}}">[{{loc}}]</a>
+				{{/loc}}
+			  	{{text}}
+			  </dd>
+			</dl>
+		</div>
+	{{/tweets}}
 	</div>
 </script>
 

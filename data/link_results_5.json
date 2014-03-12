@@ -1,7 +1,7 @@
 [
   {
     "technique": {
-      "expansion": "User Timeline (back 100, forward 0)",
+      "expansion": "User Timeline (back 4.2, forward 0.0)",
       "signal": "geo-location"
     },
     "withScores": [
@@ -203,6 +203,10 @@
           {
             "score": 1,
             "name": "The GoGo Grill",
+            "loc": {
+              "latitude": 40.705238,
+              "longitude": -74.014422
+            },
             "url": "http://www.yelp.com/biz/KWPTCL3T9E3HG22s3BspfQ"
           }
         ],
@@ -405,9 +409,14 @@
           {
             "score": 1,
             "name": "The GoGo Grill",
+            "loc": {
+              "latitude": 40.705238,
+              "longitude": -74.014422
+            },
             "url": "http://www.yelp.com/biz/KWPTCL3T9E3HG22s3BspfQ"
           }
-        ]
+        ],
+        "label": "NO"
       },
       {
         "tweet": {
@@ -621,9 +630,14 @@
           {
             "score": 1,
             "name": "El Rey Coffee",
+            "loc": {
+              "latitude": 40.7213779,
+              "longitude": -73.9879345
+            },
             "url": "http://www.yelp.com/biz/_eZPWzxHhAEEaJ7CXYavCA"
           }
-        ]
+        ],
+        "label": "MAYBE"
       }
     ],
     "withoutScores": [
@@ -8375,8 +8389,8 @@
   },
   {
     "technique": {
-      "expansion": "User Timeline (back 168, forward 168)",
-      "signal": "direct mention"
+      "expansion": "User Timeline (back 7.0, forward 7.0) AND Conversation (back 1, forward 0)",
+      "signal": "0.50 direct mention0.50 name match"
     },
     "withScores": [
       {
@@ -8543,20 +8557,21 @@
           }
         ],
         "scoreLookup": {
-          "Starbucks____starbucks": 1
+          "Starbucks____starbucks": 0.5
         },
         "restaurantScores": [
           {
-            "score": 1,
+            "score": 0.5,
             "name": "Starbucks",
             "url": "http://www.yelp.com/biz/HlzaD--e23s2pPx1pFpICw"
           },
           {
-            "score": 1,
+            "score": 0.5,
             "name": "Starbucks",
             "url": "http://www.yelp.com/biz/9geyoUfHITKKeoWETxKqVg"
           }
-        ]
+        ],
+        "label": "NO"
       }
     ],
     "withoutScores": [
@@ -8571,6 +8586,11 @@
             "text": "@stratfordsbliss food fucking poisoning.",
             "user": "drewsfallen",
             "date": "Nov 10 2013 23:34:05"
+          },
+          {
+            "text": "yo what happened with justin i was doing hw",
+            "user": "stratfordsbliss",
+            "date": "Nov 10 2013 23:29:58"
           },
           {
             "text": "RT @biebsfentygomez: i hate when there's these rude fans that don't care about his health or safety or relationships & make him upset bc he…",
@@ -9299,6 +9319,11 @@
             "date": "Nov 30 2013 06:05:52"
           },
           {
+            "text": "Might die",
+            "user": "hillaryannw",
+            "date": "Nov 30 2013 02:02:45"
+          },
+          {
             "text": "RT @DaEddy_: I need to sleep...",
             "user": "sarahrhianhi",
             "date": "Nov 30 2013 06:04:56"
@@ -9509,7 +9534,9 @@
             "date": "Nov 24 2013 04:41:13"
           }
         ],
-        "scoreLookup": {},
+        "scoreLookup": {
+          "7-11____undefined": 0.011363636363636364
+        },
         "restaurantScores": []
       },
       {
@@ -9543,6 +9570,11 @@
             "date": "Oct 11 2013 22:39:32"
           },
           {
+            "text": "LOGAN AGREES THIS IS A SUPER COOL PICTURE @loganhasson http://t.co/4JBRlRlIXG",
+            "user": "peontiffany",
+            "date": "Oct 11 2013 20:38:49"
+          },
+          {
             "text": "@FlatironSchool I picked the wrong day to suffer from horrific food poisoning.",
             "user": "vinneycavallo",
             "loc": [
@@ -9550,6 +9582,11 @@
               40.70434012
             ],
             "date": "Oct 11 2013 14:24:30"
+          },
+          {
+            "text": "Super Nintendo is on at Flatiron School http://t.co/tGXUXgYitL",
+            "user": "FlatironSchool",
+            "date": "Oct 11 2013 12:56:26"
           },
           {
             "text": "RT @robdelaney: I bet if you put a dog’s paw in a Dyson air blade hand dryer, the dog would go insane and kill 500 people.",
@@ -9762,6 +9799,11 @@
             "date": "Oct 11 2013 22:39:32"
           },
           {
+            "text": "LOGAN AGREES THIS IS A SUPER COOL PICTURE @loganhasson http://t.co/4JBRlRlIXG",
+            "user": "peontiffany",
+            "date": "Oct 11 2013 20:38:49"
+          },
+          {
             "text": "@FlatironSchool I picked the wrong day to suffer from horrific food poisoning.",
             "user": "vinneycavallo",
             "loc": [
@@ -9769,6 +9811,11 @@
               40.70434012
             ],
             "date": "Oct 11 2013 14:24:30"
+          },
+          {
+            "text": "Super Nintendo is on at Flatiron School http://t.co/tGXUXgYitL",
+            "user": "FlatironSchool",
+            "date": "Oct 11 2013 12:56:26"
           },
           {
             "text": "RT @robdelaney: I bet if you put a dog’s paw in a Dyson air blade hand dryer, the dog would go insane and kill 500 people.",
@@ -9986,6 +10033,11 @@
             "user": "xShananiGUNS",
             "loc": [],
             "date": "Oct 11 2013 23:54:03"
+          },
+          {
+            "text": "My whole body is sweating and I am extremely nauseated, and I have sharp stomach pains. Just came about in the last 30 minutes :'(",
+            "user": "linzwashburn",
+            "date": "Oct 11 2013 23:53:26"
           }
         ],
         "scoreLookup": {},
@@ -10002,6 +10054,11 @@
             "text": "@rcshowman Taco Bell is 2nd tier, c'mon now. P.S. Don't bury the lede: I had food poisoning and I still ate a frisco melt w/ a banana shake.",
             "user": "HoneyIShrunkJG2",
             "date": "Oct 13 2013 22:26:41"
+          },
+          {
+            "text": "@HoneyIShrunkJG2 Finally well enough for third tier Mexican, eh?",
+            "user": "rcshowman",
+            "date": "Oct 13 2013 22:19:31"
           },
           {
             "text": "The Crunchwrap Supreme is great if you feel your burrito experience isn't flat and cylindrical enough.",
@@ -10185,6 +10242,11 @@
             "user": "Ellen_Lee3",
             "loc": [],
             "date": "Oct 13 2013 11:06:15"
+          },
+          {
+            "text": ".@kalenski And the leftovers will miraculously last for eight days!",
+            "user": "BCDreyer",
+            "date": "Oct 13 2013 10:12:48"
           }
         ],
         "scoreLookup": {},
@@ -10211,9 +10273,19 @@
             "date": "Oct 09 2013 19:15:31"
           },
           {
+            "text": "@RKGFRIENDS @R_GellerFriends Hey!! What's the matter with you?",
+            "user": "PhoebeBFriends",
+            "date": "Oct 09 2013 19:09:59"
+          },
+          {
             "text": "@R_GellerFriends @PhoebeBFriends *Hears Phoebe & crawls out of bed puts on a robe and shuffles out of the room* Hey, Pheebs",
             "user": "RachKGGFriends",
             "date": "Oct 09 2013 19:08:07"
+          },
+          {
+            "text": "@PhoebeBFriends @RKGFRIENDS she's in the bedroom, she is really ill today, it's so sad *sad face and sad voice*",
+            "user": "R_GellerFriends",
+            "date": "Oct 09 2013 19:05:47"
           }
         ],
         "scoreLookup": {},
@@ -10232,14 +10304,29 @@
             "date": "Oct 13 2013 23:34:59"
           },
           {
+            "text": "@Spark_titan @TeaR_Taylor @MLG_Seahorse dont u mean drunk?",
+            "user": "The_Monstrous",
+            "date": "Oct 13 2013 23:21:36"
+          },
+          {
             "text": "@FaTe_Monstrous @TeaR_Taylor @MLG_Seahorse i getting really sick right now guys",
             "user": "Spark_titan",
             "date": "Oct 13 2013 23:16:44"
           },
           {
+            "text": "@Spark_titan @TeaR_Taylor @MLG_Seahorse WHERE R U.....",
+            "user": "The_Monstrous",
+            "date": "Oct 13 2013 22:23:37"
+          },
+          {
             "text": "@FaTe_Monstrous @TeaR_Taylor @MLG_Seahorse no.",
             "user": "Spark_titan",
             "date": "Oct 13 2013 23:30:52"
+          },
+          {
+            "text": "@Spark_titan @TeaR_Taylor @MLG_Seahorse dont u mean drunk?",
+            "user": "The_Monstrous",
+            "date": "Oct 13 2013 23:21:36"
           },
           {
             "text": "@FaTe_Monstrous @TeaR_Taylor @MLG_Seahorse im coming back now I missed the bus",
@@ -10843,6 +10930,11 @@
             "date": "Oct 19 2013 12:46:58"
           },
           {
+            "text": "Now that the stomach flu has subsided I want to eat everything for breakfast.",
+            "user": "kdakeis",
+            "date": "Oct 19 2013 12:41:27"
+          },
+          {
             "text": "Beautiful morning drive out to Folly Beach—nothing like a like salt air blowing through your hair. #charleston",
             "user": "laurenoneill",
             "date": "Oct 19 2013 12:46:05"
@@ -10922,6 +11014,11 @@
             "text": "@hauntedempireny 100% better! Food poisoning was all it was. I will be back on my A-game Friday!",
             "user": "ItsKatHart",
             "date": "Oct 22 2013 09:55:23"
+          },
+          {
+            "text": "@ItsKatHart are you feeling better?",
+            "user": "hauntedempireny",
+            "date": "Oct 22 2013 07:49:59"
           },
           {
             "text": "Overheard: Omg yes please these are fab - 1. Did you wake up cranky? 2. Would you date an 18-year-old at the... http://t.co/ZD1IPneHtL",
@@ -11080,6 +11177,11 @@
             "date": "Nov 11 2013 17:42:22"
           },
           {
+            "text": "Worrying about getting sick from food isn't worth the time. 1 time in life I got awful food poisoning? 5-star Pierre Hotel in NYC",
+            "user": "darrenrovell",
+            "date": "Nov 10 2013 23:30:28"
+          },
+          {
             "text": "RT @jfagone: Thanks to @matthew_power for alerting me to the existence of the Bonghitters http://t.co/yyZfU0jy1Q",
             "user": "HTBonghitters",
             "date": "Nov 17 2013 22:41:43"
@@ -11134,6 +11236,11 @@
             "text": "@SanaMayat he had food poisoning last night",
             "user": "OMGFouziaK",
             "date": "Nov 11 2013 12:22:39"
+          },
+          {
+            "text": "Trying to figure out why #StayStrongJustin is trending...what's up with boober this time?",
+            "user": "SanaMayat",
+            "date": "Nov 11 2013 12:05:03"
           },
           {
             "text": "RT @AlfredoFlores: Going against doctors orders he still went on stage tonight. The last thing Justin ever wants to do is let his fans down.",
@@ -11205,6 +11312,11 @@
             "text": "@chadwickshake he got food poisoning, he was dehydrated and i think he collapsed on stage",
             "user": "sassykeatons",
             "date": "Nov 10 2013 23:57:56"
+          },
+          {
+            "text": "da fuq happened #PrayForJustinBieber",
+            "user": "chadwickshake",
+            "date": "Nov 10 2013 23:55:21"
           },
           {
             "text": "RT @chadwickshake: Drew with stubble &gt; all of humanity",
@@ -11366,6 +11478,11 @@
             "text": "@alanmallouhi I would but I'm literally dying in bed since I have food poisoning",
             "user": "sophh_w",
             "date": "Oct 22 2013 18:04:19"
+          },
+          {
+            "text": "@sophh_w wanna meet at bobst and do it together? I'll submit it first. If not its cool I owe you",
+            "user": "alanmallouhi",
+            "date": "Oct 22 2013 18:03:22"
           },
           {
             "text": "@alanmallouhi could you send me answers when you're done the pre lab?",
@@ -11764,6 +11881,11 @@
             "user": "jereezyy",
             "loc": [],
             "date": "Nov 11 2013 12:49:31"
+          },
+          {
+            "text": "@jereezyy no its bc he supposedly left the stadium in an ambulance and he performed with an iv in his arm and all this shit",
+            "user": "tiaratooturnt",
+            "date": "Nov 11 2013 12:48:56"
           }
         ],
         "scoreLookup": {},
@@ -12508,6 +12630,11 @@
             "user": "MikeBaloga1",
             "loc": [],
             "date": "Nov 13 2013 23:19:09"
+          },
+          {
+            "text": "@MikeBaloga1 I'm hungry. Don't judge me✋",
+            "user": "imfernly",
+            "date": "Nov 13 2013 23:18:25"
           }
         ],
         "scoreLookup": {},
@@ -12534,6 +12661,11 @@
             "date": "Oct 28 2013 14:34:18"
           },
           {
+            "text": "@ricenbeats LOL Kid Rocky Mountain Oysters",
+            "user": "BauceSauce",
+            "date": "Oct 28 2013 14:33:11"
+          },
+          {
             "text": "@BauceSauce Yes. Although a Hard Rap-Rock Cafe would be the worst.",
             "user": "ricenbeats",
             "loc": [
@@ -12541,6 +12673,11 @@
               40.74262302
             ],
             "date": "Oct 28 2013 14:32:45"
+          },
+          {
+            "text": "@ricenbeats this could work. Hard Rock Cafe but rap",
+            "user": "BauceSauce",
+            "date": "Oct 28 2013 14:02:16"
           },
           {
             "text": "Concept: Hip hop-themed raw bar. We'll hustle oysters Roc-A-Fella and Wu-Tang Clams.",
@@ -12595,6 +12732,11 @@
             "date": "Oct 27 2013 20:09:05"
           },
           {
+            "text": "Pinkberry toppings menu currently blowing my mind. Cap 'n Crunch and cheesecake bites ATTHESAMEDAMNTIME.",
+            "user": "ricenbeats",
+            "date": "Oct 27 2013 20:09:05"
+          },
+          {
             "text": "If you don't know me know that I hate the Red Sox and am very happy when they lose. 😛",
             "user": "ricenbeats",
             "date": "Oct 27 2013 00:12:36"
@@ -12613,6 +12755,11 @@
             "text": "@ricenbeats cc @djdiz",
             "user": "ricenbeats",
             "date": "Oct 26 2013 23:34:57"
+          },
+          {
+            "text": "Whatever positive karma I have left in the world I lend to the Cardinals and Drake whenever he is feeling sad.",
+            "user": "ricenbeats",
+            "date": "Oct 26 2013 23:34:24"
           },
           {
             "text": "Whatever positive karma I have left in the world I lend to the Cardinals and Drake whenever he is feeling sad.",
@@ -12837,9 +12984,19 @@
             "date": "Oct 28 2013 23:56:14"
           },
           {
+            "text": "@MsSanDiabla nothing much, about to leave Blaines to go back to my dorm. Having the munchies, I see?",
+            "user": "NickDuval44",
+            "date": "Oct 28 2013 23:54:01"
+          },
+          {
             "text": "@NickDuval44 I'm good I'm good. What's up home slice",
             "user": "MsSanDiabla",
             "date": "Oct 28 2013 23:51:58"
+          },
+          {
+            "text": "@MsSanDiabla yes, beautiful? How are you doing on this lovely evening?",
+            "user": "NickDuval44",
+            "date": "Oct 28 2013 23:46:19"
           },
           {
             "text": "@StonyBlaine [text] you did good homie. I give my thanks",
@@ -13846,6 +14003,11 @@
             "date": "Nov 24 2013 08:40:19"
           },
           {
+            "text": "@ashe_phoenix one of them got violently ill",
+            "user": "nffc65",
+            "date": "Nov 24 2013 08:36:50"
+          },
+          {
             "text": "@nffc65 lol. Boys turned it into a biohazard?",
             "user": "ashe_phoenix",
             "loc": [
@@ -13853,6 +14015,11 @@
               40.69136163
             ],
             "date": "Nov 24 2013 08:34:20"
+          },
+          {
+            "text": "@ashe_phoenix cold lol. i need to sterilize my house lol",
+            "user": "nffc65",
+            "date": "Nov 24 2013 08:32:49"
           }
         ],
         "scoreLookup": {},
@@ -13869,6 +14036,11 @@
             "text": ".@ProAudioTommy I got food poisoning from @Brueggers in like '01 hangin after a show puked and shat fucking everywhere. #nothorny",
             "user": "ludakrishayes",
             "date": "Dec 18 2013 15:16:12"
+          },
+          {
+            "text": ".@Brueggers I just got an everything bagel with cream cheese from ya'll and my ass is on fire. Makes @tacojohns look like 5 star dining",
+            "user": "ProAudioTommy",
+            "date": "Dec 18 2013 13:37:07"
           },
           {
             "text": "RT @ProAudioTommy: .@Brueggers I just got an everything bagel with cream cheese from ya'll and my ass is on fire. Makes @tacojohns look lik…",
@@ -14336,6 +14508,11 @@
             "date": "Dec 14 2013 17:38:35"
           },
           {
+            "text": "@CassiePodish ehh Coven's been a little soft for me!",
+            "user": "ludakrishayes",
+            "date": "Dec 14 2013 17:38:35"
+          },
+          {
             "text": "@BanquetsAmerica quite the contrary!! Haha",
             "user": "ludakrishayes",
             "date": "Dec 14 2013 16:28:51"
@@ -14580,6 +14757,11 @@
             "text": "@nicklazzara don't go. We all got food poisoning last time I went",
             "user": "al_palll",
             "date": "Dec 21 2013 10:36:48"
+          },
+          {
+            "text": "I hope Sean was serious about going to Jose tejas today",
+            "user": "nicklazzara",
+            "date": "Dec 21 2013 09:43:35"
           },
           {
             "text": "Nothing says good morning like the news filming your 9 AM workout",
@@ -18823,6 +19005,11 @@
             "date": "Oct 22 2013 18:04:19"
           },
           {
+            "text": "@sophh_w wanna meet at bobst and do it together? I'll submit it first. If not its cool I owe you",
+            "user": "alanmallouhi",
+            "date": "Oct 22 2013 18:03:22"
+          },
+          {
             "text": "@alanmallouhi could you send me answers when you're done the pre lab?",
             "user": "sophh_w",
             "date": "Oct 22 2013 17:53:58"
@@ -19409,6 +19596,11 @@
             "date": "Oct 20 2013 16:51:44"
           },
           {
+            "text": "@KhalidaEDD No can do darling.",
+            "user": "Birdykd",
+            "date": "Oct 20 2013 16:49:29"
+          },
+          {
             "text": "Inhale Exhale.",
             "user": "Birdykd",
             "date": "Oct 20 2013 16:49:56"
@@ -19487,6 +19679,11 @@
             "text": "@JebinAkhtar No baby no your not the real slim shady.",
             "user": "Birdykd",
             "date": "Oct 20 2013 16:20:26"
+          },
+          {
+            "text": "Would the real slim shady please stand up? @JebinAkhtar",
+            "user": "Birdykd",
+            "date": "Oct 20 2013 16:17:51"
           },
           {
             "text": "Would the real slim shady please stand up? @JebinAkhtar",
@@ -19662,6 +19859,11 @@
             "text": "@Fariah_98 and also my sense of style and taste in clothes so.",
             "user": "Birdykd",
             "date": "Oct 16 2013 17:51:32"
+          },
+          {
+            "text": "@Fariah_98 my hair styling skills are becoming vast.",
+            "user": "Birdykd",
+            "date": "Oct 16 2013 17:51:08"
           },
           {
             "text": "@Fariah_98 my hair styling skills are becoming vast.",
@@ -20208,7 +20410,9 @@
             "date": "Nov 04 2013 19:09:10"
           }
         ],
-        "scoreLookup": {},
+        "scoreLookup": {
+          "new york city____undefined": 0.010869565217391304
+        },
         "restaurantScores": []
       },
       {

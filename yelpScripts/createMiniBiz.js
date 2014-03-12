@@ -5,14 +5,14 @@
 var _        = require('lodash');
 var lazy     = require('lazy');
 var fs       = require('fs');
-var proc     = require('../util/processUtil');
+var proc     = require('../util/process');
 var database = require('../api/database');
 
 // **************************
 // ******** PROGRAM ********
 // **************************
 
-var fromFile = './private/20131205_businesses.json';
+var fromFile = './private/20140311_businesses.json';
 var toFile = './private/yelp_businesses-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
 
 database.runWithConn(function() {
@@ -30,7 +30,9 @@ database.runWithConn(function() {
 		new lazy(fs.createReadStream(fromFile))
 		.lines
 		.map(function(line) {
-			var biz = JSON.parse(line.toString());
+			return JSON.parse(line.toString());
+		})
+		.map(function(biz) {
 			biz.twitter = twitterByYelpBiz[biz.id];
 			biz.coordinate = biz.location.coordinate;
 			return _.pick(biz, 'id', 'name', 'twitter', 'coordinate');

@@ -1,7 +1,7 @@
 [
   {
     "technique": {
-      "expansion": "User Timeline (back 100, forward 0)",
+      "expansion": "User Timeline (back 4.2, forward 0.0)",
       "signal": "geo-location"
     },
     "withScores": [
@@ -203,6 +203,10 @@
           {
             "score": 1,
             "name": "The GoGo Grill",
+            "loc": {
+              "latitude": 40.705238,
+              "longitude": -74.014422
+            },
             "url": "http://www.yelp.com/biz/KWPTCL3T9E3HG22s3BspfQ"
           }
         ],
@@ -405,9 +409,14 @@
           {
             "score": 1,
             "name": "The GoGo Grill",
+            "loc": {
+              "latitude": 40.705238,
+              "longitude": -74.014422
+            },
             "url": "http://www.yelp.com/biz/KWPTCL3T9E3HG22s3BspfQ"
           }
-        ]
+        ],
+        "label": "NO"
       },
       {
         "tweet": {
@@ -621,9 +630,14 @@
           {
             "score": 1,
             "name": "El Rey Coffee",
+            "loc": {
+              "latitude": 40.7213779,
+              "longitude": -73.9879345
+            },
             "url": "http://www.yelp.com/biz/_eZPWzxHhAEEaJ7CXYavCA"
           }
-        ]
+        ],
+        "label": "MAYBE"
       }
     ],
     "withoutScores": [
@@ -8375,7 +8389,7 @@
   },
   {
     "technique": {
-      "expansion": "User Timeline (back 168, forward 168)",
+      "expansion": "User Timeline (back 7.0, forward 7.0)",
       "signal": "direct mention"
     },
     "withScores": [

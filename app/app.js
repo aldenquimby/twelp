@@ -38,32 +38,32 @@ app.configure('production', function(){
 // ******** ROUTING *********
 // **************************
 
-var linkResultsPath = function(date) {
-	return '../data/link_results_' + date + '.json';
+var linkResultsPath = function(num) {
+	return '../data/link_results_' + num + '.json';
 };
 
-var getLinkResults = function(date) {
-	var file = fs.readFileSync(linkResultsPath(date));
+var getLinkResults = function(num) {
+	var file = fs.readFileSync(linkResultsPath(num));
 	return JSON.parse(file);
 };
 
-var saveLinkResults = function(date, data, callback) {
-	fs.writeFile(linkResultsPath(date), JSON.stringify(data, null, 2), callback);
+var saveLinkResults = function(num, data, callback) {
+	fs.writeFile(linkResultsPath(num), JSON.stringify(data, null, 2), callback);
 };
 
 app.get('/link_results', function(req, res) {
-	var data = getLinkResults(req.param('date'));
+	var data = getLinkResults(req.param('num'));
 	res.json(data);
 });
 
 app.post('/training', function(req, res) {
-	var date = req.param('date');
-	var data = getLinkResults(date);
+	var num = req.param('num');
+	var data = getLinkResults(num);
 	var tech = data[req.body.techniqueIndex];
 	var result = tech.withScores[req.body.withScoresIndex];
 	result.label = req.body.label;
 
-	saveLinkResults(date, data, function(err) {
+	saveLinkResults(num, data, function(err) {
 		if (err) {
 			res.json({success:false});
 		}
@@ -74,20 +74,20 @@ app.post('/training', function(req, res) {
 });
 
 app.put('/training', function(req, res) {
-	var date = req.param('date');
-	var data = getLinkResults(date);
+	var num = req.param('num');
+	var data = getLinkResults(num);
 	_.each(data, function(tech) {
 		_.each(tech.withScores, function(result) {
 			delete result.label;
 		});
 	});
 
-	saveLinkResults(date, data, function(err) {
+	saveLinkResults(num, data, function(err) {
 		if (err) {
 			res.json({success:false});
 		}
 		else {
-			res.json({success:true, data:data});
+			res.json({success:true});
 		}
 	});
 });

@@ -1,7 +1,7 @@
 
 var _ = require('lodash');
 var schema = require('./schema');
-var proc = require('../util/processUtil');
+var proc = require('../util/process');
 var keys = require('../private/keys');
 var mongoose = require('mongoose'),
     db = mongoose.connection;
