@@ -19,4 +19,4 @@ node_modules
 private
 
 # compiled less
-*/less/*.css
+**/less/*.css
