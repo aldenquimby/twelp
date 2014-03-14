@@ -56,7 +56,11 @@ var YelpBusinessSchema = new Schema({
     id: { type: String, required: true, index: {unique: true, dropDups: true} },
     url: { type: String },
     site: String,
-    twitter: String
+    twitter: String,
+    geometry: { 
+        type: { type: String },
+        coordinates: []
+    }
 });
 
 exports.createTweetForDb = function(tweet) {
@@ -127,4 +131,3 @@ exports.createTweetForDb = function(tweet) {
 
 exports.TweetSchema = TweetSchema;
 exports.YelpBusinessSchema = YelpBusinessSchema;
-

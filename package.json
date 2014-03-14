@@ -13,6 +13,7 @@
     "factual-api": "*",
     "fuzzy": "*",
     "fuzzyset.js": "*",
+    "geo": "*",
     "jsclass": "*",
     "json2csv": "*",
     "lazy": "*",

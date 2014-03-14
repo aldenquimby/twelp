@@ -20,24 +20,23 @@ var TrainingView = Backbone.View.extend({
 	displayNext : function() {
 		var self = this;
 
-		self.currTech = self.data[self.techniqueIdx];
+		var currTech = self.data[self.techniqueIdx];
 
 		// switch to results view if we're done
-		if (!self.currTech) {
+		if (!currTech) {
 			return window.location.href = '/results.html' + window.location.search;
 		}
 
-		self.currResult = null;
-		_.any(self.currTech.withScores, function(result, withScoresIdx) {
+		self.withScoresIdx = -1;
+		_.any(currTech.withScores, function(result, withScoresIdx) {
 			if (!result.label) {
-				self.currResult = result;
 				self.withScoresIdx = withScoresIdx;
 				return true;
 			}
 			return false;
 		});
 
-		if (!self.currResult) {
+		if (self.withScoresIdx < 0) {
 			self.techniqueIdx++;
 			return self.displayNext();
 		}
@@ -47,6 +46,9 @@ var TrainingView = Backbone.View.extend({
 
 	render : function () {
 		var self = this;
+
+		self.currTech = self.data[self.techniqueIdx];
+		self.currResult = self.currTech.withScores[self.withScoresIdx];
 
 		self.$el.html('');
 

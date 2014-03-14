@@ -32,7 +32,7 @@ var getUseableMap = function(bizs) {
 
 exports.analyzeTwelpMap = function(callback) {
 	database.connect(function() {
-		database.getYelpBusinesses(function(err, bizs) {
+		database.getYelpBusinesses({}, function(err, bizs) {
 			if (err) {
 				return callback(err);
 			}
@@ -72,7 +72,7 @@ exports.analyzeTwelpMap = function(callback) {
 
 exports.findTweets = function(callback) {
 	database.connect(function() {
-		database.getYelpBusinesses(function(err, bizs) {
+		database.getYelpBusinesses({} function(err, bizs) {
 			if (err) {
 				return callback(err);
 			}
@@ -88,7 +88,7 @@ exports.findTweets = function(callback) {
 };
 
 exports.getAllResetaurantUsers = function(callback) {
-	database.getYelpBusinesses(function(err, bizs) {
+	database.getYelpBusinesses({}, function(err, bizs) {
 		if (err) {
 			return callback(err);
 		}

@@ -101,11 +101,11 @@ exports.saveYelpBusinesses = function(yelpBizs, callback) {
 	});
 };
 
-exports.upsertYelpBusiness = function(yelpBiz, callback) {
-	yelpBizModel().update({id: yelpBiz.id}, yelpBiz, {upsert:true}, 
+exports.upsertYelpBusiness = function(id, update, callback) {
+	yelpBizModel().update({id: id}, update, {upsert:true}, 
 						  callback);
 };
 
-exports.getYelpBusinesses = function(callback) {
-    yelpBizModel().find({}).exec(callback);
+exports.getYelpBusinesses = function(search, callback) {
+    yelpBizModel().find(search).exec(callback);
 };

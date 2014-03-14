@@ -36,7 +36,7 @@ database.runWithConn(function() {
 				if (username) {
 					smallBiz.twitter = username;
 				}
-				database.upsertYelpBusiness(smallBiz, function(err) {
+				database.upsertYelpBusiness(smallBiz.id, smallBiz, function(err) {
 					if (err) {
 						console.log(err);
 					} else {

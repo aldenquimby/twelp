@@ -17,7 +17,7 @@ var toFile = './private/yelp_businesses-' + new Date().toJSON().replace(/:|-/g, 
 
 database.runWithConn(function() {
 
-	database.getYelpBusinesses(function(err, yelpBizs) {
+	database.getYelpBusinesses({}, function(err, yelpBizs) {
 		if (err) { proc.bail('Failed to get yelp bizs', err); }
 
 		var twitterByYelpBiz = {};
