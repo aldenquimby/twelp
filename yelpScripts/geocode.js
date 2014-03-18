@@ -2,7 +2,6 @@
 // ****** DEPENDENCIES ******
 // **************************
 
-var geo      = require('geo');
 var _        = require('lodash');
 var lazy     = require('lazy');
 var fs       = require('fs');
@@ -16,8 +15,11 @@ var request  = require('request');
 // ******** CONSTANTS *******
 // **************************
 
+var MAX_GOOGLE_API_CALLS = 2500;
+
 var FROM_FILE = './private/20140311_businesses.json';
 
+// TODO re-run all of these just to double check them
 var FAILED_GEO_CODES = [
 	'6122 188th St, College Point, NY, 11356',
 	'870 Remsen Ave, New York, NY, 11236',
@@ -26,6 +28,23 @@ var FAILED_GEO_CODES = [
 	'At Sideshows By the Seashore & Freak Bar 1208 Surf Ave, Brooklyn, NY, 11224',
 	'In Chelsea Market 75 9th Ave, New York, NY, 10011',
 	'5th Ave between 16th & 17th Sts, New York, NY, 10010',
+	'147 Bleeker St In front of Peculiar pub/Bitter End, Manhattan, NY, 10012',
+	'Waldorf Astoria 50th & Lexington Ave, New York, NY, 10022',
+	'3418B Boston Rd Bet Wilson & Fish Ave, Bronx, NY, 10469',
+	'850 Broadway in front of Union Square Regal Cinemas in front of Union Square Regal Cinemas, New York, NY, 10003',
+	'181 Grand St Between Mulberry & Baxter Street, New York, NY, 10013',
+	'861 7th Ave, New York, NY, 10019',
+	'New World Mall Food Court- Stall #23 136-20 Roosevelt Ave, Flushing, NY, 11354',
+	'380 Lexington Ave btwn 41st & 42nd St, New York, NY, 10168',
+	'26-05 Francis Lewis Blvd, Queens, NY, 11358',
+	'JFK Airport, Terminal 8 JFK Expy & S Cargo Rd, Jamaica, NY, 11430',
+	'Columbus Avenue Btwn 78th & 81st St, New York, NY, 10024',
+	'Whitehall St between Pearl St & Water St, New York, NY, 10004',
+	'140 Broadway Between Liberty St. & Cedar St., New York, NY, 10005',
+	'100 Kingston Ave bet. Bergen Street & Dean Street, Brooklyn, NY, 11216',
+	'In Front of 584 Broadway between Prince & Houston, Manhattan, NY, 10012',
+	'Bedford Avenue between 5th & 6th Avenue, Brooklyn, NY, 11211',
+	'Between 111th & 108th on Roosevelt Ave., Corona, NY, 11368',
 ];
 
 // **************************
@@ -97,10 +116,12 @@ database.runWithConn(function() {
 				return failedGeoCode != geoBiz.toGeoCode; 
 			});
 		})
-		.take(2500) // google api max is 2500 per day
+		.join(function(bizs){console.log(bizs.length);});
+/*		.take(MAX_GOOGLE_API_CALLS)
 		.forEach(function(geoBiz) {
 
-			var url = 'https://maps.googleapis.com/maps/api/geocode/json?key=' + keys.GOOGLE_API_KEYS[0] + '&sensor=false&address=' + geoBiz.toGeoCode;
+			var url = 'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=' + geoBiz.toGeoCode;
+			url += '&key=' + keys.GOOGLE_API_KEYS[0];
 
 			request(url, function(err, resp, body) {
 				if (err || resp.statusCode != 200) { proc.bail('Failed to geocode address: ' + geoBiz.toGeoCode, err); }
@@ -123,19 +144,7 @@ database.runWithConn(function() {
 					console.log('NO RESULTS FOR: ' + geoBiz.toGeoCode);
 				}
 			});
-
-			return;
-			geo.geocoder(geo.google, geoBiz.toGeoCode, false, function(formattedAddress, latitude, longitude, details) {
-				if (!latitude || !longitude) {
-					return console.log('FAILED TO GEO-CODE: ' + geoBiz.toGeoCode);
-				}
-
-				var coordinate = { latitude: latitude, longitude: longitude };
-				upsertGeoLocation(geoBiz.id, coordinate, function(err) {
-					if (err) { proc.bail('Failed to upsert biz with google geocode ' + geoBiz.id, err); }
-				});
-			});
-		});
+		});*/
 	});
 
 });
