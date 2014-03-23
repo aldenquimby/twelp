@@ -19,7 +19,6 @@ var MAX_GOOGLE_API_CALLS = 2500;
 
 var FROM_FILE = './private/20140311_businesses.json';
 
-// TODO re-run all of these just to double check them
 var FAILED_GEO_CODES = [
 	'6122 188th St, College Point, NY, 11356',
 	'870 Remsen Ave, New York, NY, 11236',
@@ -45,6 +44,16 @@ var FAILED_GEO_CODES = [
 	'In Front of 584 Broadway between Prince & Houston, Manhattan, NY, 10012',
 	'Bedford Avenue between 5th & 6th Avenue, Brooklyn, NY, 11211',
 	'Between 111th & 108th on Roosevelt Ave., Corona, NY, 11368',
+	'JFK International Airport, Terminal 5 JFK Expy & S Cargo Rd, Jamaica, NY, 11430',
+	'35th St Btwn 5th & Madison Ave, New York, NY, 10016',
+	'Abingdon Square 8th Ave & 12th St, New York, NY, 10014',
+	'E 138th St between St Anns Ave & Cypress Ave, Bronx, NY, 10462',
+	'Whitehall St btwn Bridge & Pearl, New York, NY, 10004',
+	'Hester Street Fair Hester St & Essex St, New York, NY, 10002',
+	'3rd Ave. between 59th & 58th St., New York, NY, 10022',
+	'3502 Flatlands Ave Ave N & East 35th St, New York, NY, 11234',
+	'1374 First Ave Between 73rd & 74th St, New York, NY, 10021',
+	'205 Madison St Bet. Rutgers & Jefferson, New York, NY, 10002',
 ];
 
 // **************************
@@ -116,8 +125,8 @@ database.runWithConn(function() {
 				return failedGeoCode != geoBiz.toGeoCode; 
 			});
 		})
-		.join(function(bizs){console.log(bizs.length);});
-/*		.take(MAX_GOOGLE_API_CALLS)
+//		.join(function(bizs){console.log(bizs.length);});
+		.take(MAX_GOOGLE_API_CALLS)
 		.forEach(function(geoBiz) {
 
 			var url = 'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=' + geoBiz.toGeoCode;
@@ -141,10 +150,10 @@ database.runWithConn(function() {
 					}
 				}
 				else {
-					console.log('NO RESULTS FOR: ' + geoBiz.toGeoCode);
+					console.log(body.status + ': ' + geoBiz.toGeoCode);
 				}
 			});
-		});*/
+		});
 	});
 
 });
