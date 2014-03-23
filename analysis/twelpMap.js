@@ -72,7 +72,7 @@ exports.analyzeTwelpMap = function(callback) {
 
 exports.findTweets = function(callback) {
 	database.connect(function() {
-		database.getYelpBusinesses({} function(err, bizs) {
+		database.getYelpBusinesses({}, function(err, bizs) {
 			if (err) {
 				return callback(err);
 			}

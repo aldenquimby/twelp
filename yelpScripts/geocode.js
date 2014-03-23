@@ -17,7 +17,7 @@ var request  = require('request');
 
 var MAX_GOOGLE_API_CALLS = 2500;
 
-var FROM_FILE = './private/20140311_businesses.json';
+var FROM_FILE = './private/20140321_businesses.json';
 
 var FAILED_GEO_CODES = [
 	'6122 188th St, College Point, NY, 11356',
@@ -130,7 +130,7 @@ database.runWithConn(function() {
 		.forEach(function(geoBiz) {
 
 			var url = 'https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address=' + geoBiz.toGeoCode;
-			url += '&key=' + keys.GOOGLE_API_KEYS[0];
+			url += '&key=' + keys.GOOGLE_API_KEYS[2];
 
 			request(url, function(err, resp, body) {
 				if (err || resp.statusCode != 200) { proc.bail('Failed to geocode address: ' + geoBiz.toGeoCode, err); }

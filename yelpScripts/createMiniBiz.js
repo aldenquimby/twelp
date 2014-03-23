@@ -12,7 +12,7 @@ var database = require('../api/database');
 // ******** PROGRAM ********
 // **************************
 
-var fromFile = './private/20140311_businesses.json';
+var fromFile = './private/20140321_businesses.json';
 var toFile = './private/yelp_businesses-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
 
 database.runWithConn(function() {

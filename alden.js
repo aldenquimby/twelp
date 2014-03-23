@@ -14,6 +14,19 @@ var fs       = require('fs');
 // ******** PROGRAM ********
 // **************************
 
+var fromFile = './private/20140321_businesses.json';
+
+new lazy(fs.createReadStream(fromFile))
+.lines
+.map(function(line) { return JSON.parse(line.toString()); })
+.take(10)
+.forEach(function(biz) {
+	biz.reviews = [];
+	console.log(JSON.stringify(biz, null, 2));
+});
+
+return;
+
 var fromFile = './private/tweets.json';
 
 new lazy(fs.createReadStream(fromFile))
