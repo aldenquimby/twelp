@@ -9,40 +9,8 @@ var TrainingView = Backbone.View.extend({
 		var self = this;
 
 		self.data = self.options.data;
-		self.techniqueIdx = 0;
-		self.withScoresIdx = 0;
-		self.currTech = null;
-		self.currResult = null;
 
-		self.displayNext();
-	},
-
-	displayNext : function() {
-		var self = this;
-
-		var currTech = self.data[self.techniqueIdx];
-
-		// switch to results view if we're done
-		if (!currTech) {
-			return window.location.href = '/results.html' + window.location.search;
-		}
-
-		self.withScoresIdx = -1;
-		_.any(currTech.withScores, function(result, withScoresIdx) {
-			if (!result.label) {
-				self.withScoresIdx = withScoresIdx;
-				return true;
-			}
-			return false;
-		});
-
-		if (self.withScoresIdx < 0) {
-			self.techniqueIdx++;
-			return self.displayNext();
-		}
-
-		self.currTech = self.data[self.techniqueIdx];
-		self.currResult = self.currTech.withScores[self.withScoresIdx];
+		self.current = self.data.pop();
 
 		self.render();
 	},
@@ -52,12 +20,10 @@ var TrainingView = Backbone.View.extend({
 
 		self.$el.html('');
 
-		var technique = self.$el.mustache('technique', self.techToView(self.currTech));
-
-		technique.find('.score').find('dd').mustache('score', _.map(self.currResult.restaurantScores, self.restScoreToView));
+		var technique = self.$el.mustache('tweetSet', self.techToView(self.current));
 
 		var tweetSetHtml = "";
-		_.each(self.currResult.expandedTweetSet, function(tweet) {
+		_.each(self.current.tweets, function(tweet) {
 			tweetSetHtml += $.Mustache.render('tweet', self.tweetToView(tweet));
 		});
 		technique.find('.tweet-set').html(tweetSetHtml);
@@ -66,6 +32,7 @@ var TrainingView = Backbone.View.extend({
 	techToView : function() {
 		var self = this;
 
+		var user = '';
 		var hasMap = false;
 		var mapUrl = 'http://maps.google.com/maps/api/staticmap?size=640x640&sensor=false';
 
@@ -73,36 +40,20 @@ var TrainingView = Backbone.View.extend({
 			return '&markers=color:' + color + '|' + lat + ',' + lon;
 		};
 
-		// dont add restaurants to map
-/*
-		_.each(self.currResult.restaurantScores, function(rs) {
-			if (rs.loc) {
-				hasMap = true;
-				mapUrl += getMarker('blue', rs.loc[1], rs.loc[0]);
-			}
-		});
-*/
-
-		_.each(self.currResult.expandedTweetSet, function(tweet) {
-			if (tweet.loc) {
+		_.each(self.current.tweets, function(tweet) {
+			if (tweet.loc && tweet.loc.length > 0) {
 				hasMap = true;
 				mapUrl += getMarker('red', tweet.loc[1], tweet.loc[0]);
+			}
+			if (tweet.initial) {
+				user = tweet.user;
 			}
 		});
 
 		return {
-			user      : self.currResult.tweet.user,
-			technique : self.currTech.technique,
+			user      : user,
 			mapUrl    : hasMap ? mapUrl : null
 		};
-	},
-
-	restScoreToView : function(rs) {
-		if (rs.loc) {
-			rs.locUrl = 'https://www.google.com/maps/place/' + rs.loc[1] + ',' + rs.loc[0];
-			rs.loc = rs.loc[1].toFixed(2) + ', ' + rs.loc[0].toFixed(2);
-		}
-		return rs;
 	},
 
 	tweetToView : function(tweet) {
@@ -112,7 +63,7 @@ var TrainingView = Backbone.View.extend({
 			date : moment(tweet.date).format('MMM DD, HH:mm'),
 			text : tweet.text,
 			user : tweet.user,
-			css : _.isEqual(tweet, self.currResult.tweet) ? 'mainTweet' : ''
+			css  : ''
 		};
 		
 		if (tweet.loc && tweet.loc.length > 0) {
@@ -131,21 +82,32 @@ var TrainingView = Backbone.View.extend({
 
 	saveLabel : function(label) {
 		var self = this;
-		self.currResult.label = label;
+		self.current.label = label;
 
-		var body = {
-			label : label,
-			techniqueIndex : self.techniqueIdx,
-			withScoresIndex : self.withScoresIdx,
-			restaurantIds : []
-		};
-
-		$.post('/training2' + window.location.search, body, function(data) {
+		$.post('/tweetSet', self.current, function(data) {
 			if (!data.success) {
 				return alert('failed!');
 			}
-			self.displayNext();			
+			self.current = self.data.pop();
+			self.render();
 		});
+	},
+
+	reset : function(e) {
+		e.preventDefault();
+		var self = this;
+		if (confirm('Are you sure you want to reset the labels?')) {
+			$.ajax({
+			    url: '/tweetSet',
+			    type: 'PUT',
+			    success: function(data) {
+					if (!data.success) {
+						return alert('failed!');
+					}
+			    	window.location.reload();
+			    }
+			});
+		}
 	}
 	
 });

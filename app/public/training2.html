@@ -32,25 +32,23 @@
 	$(function () {
 		$.Mustache.addFromDom();
 
-		$.getJSON('/link_results' + window.location.search, function(data) {
+		$.getJSON('/tweetSet', function(data) {
+			window.tweetSets = data;
 			new TrainingView({el: $('.container'), data:data});
 		});
 	});
 </script>
 
 <!-- templates -->
-<script id="technique" type="text/html">
+<script id="tweetSet" type="text/html">
 	<div class="technique">
-		<span class="humanLabel" data-label="UNKNOWN">
-			<a class="btn btn-block btn-lg btn-default">UNKNOWN</a>
-		</span>
 		<span class="humanLabel" data-label="NO">
 			<a class="btn btn-block btn-lg btn-inverse">NO</a>
 		</span>
 		<span class="humanLabel" data-label="YES">
 			<a class="btn btn-block btn-lg btn-primary">YES</a>
 		</span>
-		<h3>Did {{user}} go to any restaurants?</h3>
+		<h3>Did {{user}} visit any restaurants?</h3>
 		{{#mapUrl}}
 		<div class="map">
 			<div class="row">
@@ -61,6 +59,11 @@
 		</div>
 		{{/mapUrl}}
 		<div class="tweet-set well"></div>
+	</div>
+	<div class="row">
+		<div class="col-md-3">
+			<a class="btn btn-block btn-hg btn-primary reset">Reset Labels?</a>
+		</div>
 	</div>
 </script>
 

@@ -9,11 +9,12 @@ process.env.PORT = process.env.PORT || 3000;
 // ****** DEPENDENCIES ******
 // **************************
 
-var express = require('express');
-var app     = express();
-var path    = require('path');
-var fs      = require('fs');
-var _       = require('lodash');
+var express   = require('express');
+var app       = express();
+var path      = require('path');
+var fs        = require('fs');
+var _         = require('lodash');
+var tweetSets = require('../link/tweetSets');
 
 // **************************
 // ******* MIDDLEWARE *******
@@ -92,36 +93,22 @@ app.put('/training', function(req, res) {
 	});
 });
 
-var getLabeledData = function() {
-	var file = fs.readFileSync('../data/link_labels.json');
-	return JSON.parse(file);
-};
+app.get('/tweetSet', function(req, res) {
+	var data = tweetSets.getSets();
+	res.json(data);
+});
 
-var saveLabeledData = function(result, callback) {
-	var data = getLabeledData();
-	data.push(result);
-	fs.writeFile('../data/link_labels.json', JSON.stringify(data, null, 2), callback);
-};
+app.post('/tweetSet', function(req, res) {
+	tweetSets.upsertSet(req.body, function(err) {
+		console.log('upserted data!');
+		res.json({success:true});
+	});
+});
 
-app.post('/training2', function(req, res) {
-	var num = req.param('num');
-	var data = getLinkResults(num);
-	var tech = data[req.body.techniqueIndex];
-	var result = tech.withScores[req.body.withScoresIndex];
-
-	var newResult = {
-		tweetSet : result.expandedTweetSet,
-		restaurantIds : req.body.restaurantIds,
-		label : req.body.label
-	};
-
-	saveLabeledData(newResult, function(err) {
-		if (err) {
-			res.json({success:false});
-		}
-		else {
-			res.json({success:true});
-		}
+app.put('/tweetSet', function(req, res) {
+	tweetSets.createSets(function(err) {
+		console.log('reset data!');
+		res.json({success:true});
 	});
 });
 

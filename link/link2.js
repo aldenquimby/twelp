@@ -10,13 +10,14 @@ var moment    = require('moment');
 var exp       = require('./expansion');
 var sig       = require('./signal');
 var Technique = require('./technique').Technique;
+var fileDb    = require('../twitterScripts/fileDbHelper');
 
 // **************************
 // ******* CONSTANTS ********
 // **************************
 
-var TWEETS_FILE        = './private/tweets-20140227T030314518Z.json';
-var EXTRA_TWEET_FILES  = [
+var TWEET_FILES  = [
+	'./private/tweets-20140227T030314518Z.json',
 	'./private/extra-tweets-20140312T034623917Z.json',
 	'./private/extra-tweets-20140312T171055700Z.json',
 	'./private/extra-tweets-20140323T201012251Z.json',
@@ -122,20 +123,14 @@ var restaurantKeySelector = function(restaurant) {
 };
 
 // preload all tweets
-var allTweets = JSON.parse(fs.readFileSync(TWEETS_FILE));
+var allTweets = fileDb.getTweetsFromFiles(TWEET_FILES));
 var tweetsById = _.indexBy(allTweets, 'id');
-_.each(EXTRA_TWEET_FILES, function(file) {
-	var extraTweets = JSON.parse(fs.readFileSync(file));
-	_.each(extraTweets, function(tweet) {
-		tweetsById[tweet.id] = tweet;
-	});
-});
-var tweetsByUser = _.groupBy(_.values(tweetsById), function(tweet) {
+var tweetsByUser = _.groupBy(allTweets, function(tweet) {
 	return tweet.user.id;
 });
 
 // all restaurants by key
-var restaurants = JSON.parse(fs.readFileSync(YELP_MINI_BIZ_FILE));
+var restaurants = fileDb.getData(YELP_MINI_BIZ_FILE);
 var restaurantLookup = _.groupBy(restaurants, restaurantKeySelector);
 var restaurantsById = _.indexBy(restaurants, 'id');
 

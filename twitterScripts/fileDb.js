@@ -22,8 +22,26 @@ var upsertData = function(filePath, toUpsert, keySelector, callback) {
 	var data = getData(filePath);
 	keySelector = _.createCallback(keySelector);
 	var byKey = _.indexBy(data, keySelector);
-	byKey[keySelector(toUpsert)] = toUpsert;
+	var key = keySelector(toUpsert);
+	if (!byKey[key]) {
+		console.log('inserting...');
+	}
+	else {
+		console.log('updating...');
+	}
+	byKey[key] = toUpsert;
 	saveData(filePath, _.values(byKey), callback);
+};
+
+var getTweetsFromFiles = function(files) {
+	var tweetsById = {};
+	_.each(files, function(file) {
+		var tweets = getData(file);
+		_.each(tweets, function(tweet) {
+			tweetsById[tweet.id] = tweet;
+		});
+	});
+	return _.values(tweetsById);
 };
 
 // *********************
@@ -33,3 +51,4 @@ var upsertData = function(filePath, toUpsert, keySelector, callback) {
 exports.getData = getData;
 exports.saveData = saveData;
 exports.upsertData = upsertData;
+exports.getTweetsFromFiles = getTweetsFromFiles;
