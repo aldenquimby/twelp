@@ -41,14 +41,14 @@ var TrainingView = Backbone.View.extend({
 			return self.displayNext();
 		}
 
+		self.currTech = self.data[self.techniqueIdx];
+		self.currResult = self.currTech.withScores[self.withScoresIdx];
+
 		self.render();
 	},
 
 	render : function () {
 		var self = this;
-
-		self.currTech = self.data[self.techniqueIdx];
-		self.currResult = self.currTech.withScores[self.withScoresIdx];
 
 		self.$el.html('');
 
@@ -73,12 +73,15 @@ var TrainingView = Backbone.View.extend({
 			return '&markers=color:' + color + '|' + lat + ',' + lon;
 		};
 
+		// dont add restaurants to map
+/*
 		_.each(self.currResult.restaurantScores, function(rs) {
 			if (rs.loc) {
 				hasMap = true;
 				mapUrl += getMarker('blue', rs.loc[1], rs.loc[0]);
 			}
 		});
+*/
 
 		_.each(self.currResult.expandedTweetSet, function(tweet) {
 			if (tweet.loc) {
@@ -88,6 +91,7 @@ var TrainingView = Backbone.View.extend({
 		});
 
 		return {
+			user      : self.currResult.tweet.user,
 			technique : self.currTech.technique,
 			mapUrl    : hasMap ? mapUrl : null
 		};
@@ -132,10 +136,11 @@ var TrainingView = Backbone.View.extend({
 		var body = {
 			label : label,
 			techniqueIndex : self.techniqueIdx,
-			withScoresIndex : self.withScoresIdx
+			withScoresIndex : self.withScoresIdx,
+			restaurantIds : []
 		};
 
-		$.post('/training' + window.location.search, body, function(data) {
+		$.post('/training2' + window.location.search, body, function(data) {
 			if (!data.success) {
 				return alert('failed!');
 			}

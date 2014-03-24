@@ -117,7 +117,7 @@ var NameMatchRestuarantSignal = new Class(RestuarantSignal, {
 	// summary: assign a score [0, 1] for each restaurant based on the tweet and/or expandedTweetSet
 	// restaurantLookup: all restaurants grouped by key {name, twitterUser}
 	// returns: map from restaurant key to score [0, 1]
-	restuarantSignal: function(tweet, expandedTweetSet, restaurantLookup) {
+	_____restuarantSignal: function(tweet, expandedTweetSet, restaurantLookup) {
 		var self = this;
 
 		var keysByName = {};
@@ -238,10 +238,10 @@ var GeoLocationRestuarantSignal = new Class(RestuarantSignal, {
 
 					_.each(pair[1], function(restaurant) {
 
-						if (restaurant.coordinate && restaurant.coordinate.latitude && restaurant.coordinate.longitude) {
+						if (restaurant.coordinates && restaurant.coordinates.length == 2) {
 
-							var restLat = restaurant.coordinate.latitude;
-							var restLon = restaurant.coordinate.longitude;
+							var restLon = restaurant.coordinates[0];
+							var restLat = restaurant.coordinates[1];
 
 							var distance = self.coordDistance(tweetLat, tweetLon, restLat, restLon);
 

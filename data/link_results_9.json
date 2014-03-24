@@ -209,8 +209,7 @@
             },
             "url": "http://www.yelp.com/biz/KWPTCL3T9E3HG22s3BspfQ"
           }
-        ],
-        "label": "NO"
+        ]
       },
       {
         "tweet": {
@@ -415,8 +414,7 @@
             },
             "url": "http://www.yelp.com/biz/KWPTCL3T9E3HG22s3BspfQ"
           }
-        ],
-        "label": "NO"
+        ]
       },
       {
         "tweet": {
@@ -636,8 +634,7 @@
             },
             "url": "http://www.yelp.com/biz/_eZPWzxHhAEEaJ7CXYavCA"
           }
-        ],
-        "label": "MAYBE"
+        ]
       },
       {
         "tweet": {
@@ -831,8 +828,7 @@
             },
             "url": "http://www.yelp.com/biz/ggm-5YHqX5pXgk5Uh42dEA"
           }
-        ],
-        "label": "NO"
+        ]
       },
       {
         "tweet": {
@@ -999,8 +995,7 @@
             },
             "url": "http://www.yelp.com/biz/8UxSyKYUUpym8vE8afXDMQ"
           }
-        ],
-        "label": "NO"
+        ]
       }
     ],
     "withoutScores": [
@@ -11387,8 +11382,7 @@
             "name": "Starbucks",
             "url": "http://www.yelp.com/biz/9geyoUfHITKKeoWETxKqVg"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -11737,8 +11731,7 @@
             "name": "McDonald's",
             "url": "http://www.yelp.com/biz/B_HkncKcyD0ZL3LsHmnzqg"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -11769,8 +11762,7 @@
             "name": "Starbucks",
             "url": "http://www.yelp.com/biz/9geyoUfHITKKeoWETxKqVg"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -11813,8 +11805,7 @@
             },
             "url": "http://www.yelp.com/biz/GOsQR76O9vRQy9aZfISs2w"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -12813,8 +12804,7 @@
             "name": "Applebee's",
             "url": "http://www.yelp.com/biz/vPEIHwl9cZYYpOiNojDPyw"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -13070,8 +13060,7 @@
             },
             "url": "http://www.yelp.com/biz/GOsQR76O9vRQy9aZfISs2w"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -13130,8 +13119,7 @@
             "name": "Brooklyn Roasting Company",
             "url": "http://www.yelp.com/biz/qoUWugiUAMzSgsoLbUME9w"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -13529,8 +13517,7 @@
             "name": "Subway",
             "url": "http://www.yelp.com/biz/gBpd8DM-ETICDOzhy26AIQ"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -13804,8 +13791,7 @@
             "name": "McDonald's",
             "url": "http://www.yelp.com/biz/B_HkncKcyD0ZL3LsHmnzqg"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -14011,8 +13997,7 @@
             "name": "Subway",
             "url": "http://www.yelp.com/biz/dWxMq2DvfDhr9De_vWg93w"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -14043,8 +14028,7 @@
             "name": "McDonald's",
             "url": "http://www.yelp.com/biz/B_HkncKcyD0ZL3LsHmnzqg"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -15078,8 +15062,7 @@
             "name": "Panera Bread",
             "url": "http://www.yelp.com/biz/kFWVQ9hbfo1PrlfenK3DYw"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -15482,8 +15465,7 @@
             },
             "url": "http://www.yelp.com/biz/rOwFNsF0jK4xsARKeGKcDA"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -15732,8 +15714,7 @@
             "name": "Subway",
             "url": "http://www.yelp.com/biz/dWxMq2DvfDhr9De_vWg93w"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -16167,8 +16148,7 @@
             "name": "McDonald's",
             "url": "http://www.yelp.com/biz/B_HkncKcyD0ZL3LsHmnzqg"
           }
-        ],
-        "label": "YES"
+        ]
       }
     ],
     "withoutScores": [

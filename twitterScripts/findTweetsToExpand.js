@@ -12,7 +12,7 @@ var sig      = require('../link/signal')
 // ****** CONSTANTS ****
 // *********************
 
-var YELP_MINI_BIZ_FILE = './private/yelp_businesses-20140312T131153145Z.json';
+var YELP_MINI_BIZ_FILE = './private/yelp_businesses-20140323T163547057Z.json';
 
 // *********************
 // ****** PROGRAM ******

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8"/>
+	<title>TWELP</title>
+	<base target="_blank">
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="/less/flat-ui.css">
+    <link rel="stylesheet" href="/less/index.css">
+    <link rel="stylesheet" href="/less/training.css">
+</head>
+
+<body>
+	<div class="container"></div>
+</body>
+
+<!-- JS framework -->
+<script type="text/javascript" src="/javascripts/framework/jquery-2.1.0.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/lodash.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/moment.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/backbone-min.js"></script>  
+<script type="text/javascript" src="/javascripts/framework/mustache.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/jquery.mustache.min.js"></script>
+
+<!-- JS views -->
+<script src="/javascripts/training/trainingView2.js"></script>
+
+<!-- app start -->
+<script>
+
+	$(function () {
+		$.Mustache.addFromDom();
+
+		$.getJSON('/link_results' + window.location.search, function(data) {
+			new TrainingView({el: $('.container'), data:data});
+		});
+	});
+</script>
+
+<!-- templates -->
+<script id="technique" type="text/html">
+	<div class="technique">
+		<span class="humanLabel" data-label="UNKNOWN">
+			<a class="btn btn-block btn-lg btn-default">UNKNOWN</a>
+		</span>
+		<span class="humanLabel" data-label="NO">
+			<a class="btn btn-block btn-lg btn-inverse">NO</a>
+		</span>
+		<span class="humanLabel" data-label="YES">
+			<a class="btn btn-block btn-lg btn-primary">YES</a>
+		</span>
+		<h3>Did {{user}} go to any restaurants?</h3>
+		{{#mapUrl}}
+		<div class="map">
+			<div class="row">
+				<dl class="dl-horizontal">
+					<dt>Full Map</dt>
+					<dd><a href="{{mapUrl}}">Click here</a></dd>
+				</dl>
+		</div>
+		{{/mapUrl}}
+		<div class="tweet-set well"></div>
+	</div>
+</script>
+
+<script id="tweet" type="text/html">
+	<div class="row tweet {{css}}">
+		<dl class="dl-horizontal">
+		  <dt>{{date}}</dt>
+		  <dd>
+		  	<strong>{{user}}</strong>
+			{{#loc}}
+				<a href="{{locUrl}}">[{{loc}}]</a>
+			{{/loc}}
+			:
+		  	{{text}}
+		  </dd>
+		</dl>
+	</div>
+</script>
+
+</html>

@@ -11,8 +11,7 @@ var _        = require('lodash');
 // ******** TWEETS ********
 // ************************
 
-	var positiveTweets = [
-
+var positiveTweets = [
 	  "Food poisoning sucks! Never eating subway again😨 #needsleep #drained"
 	, "I will NEVER eat processed meat EVER again.....Pret has betrayed me  #foodpoisoning"
 	, "@patchen828 I'm never eating the trash you sell at McNasties ever again. #sick"
@@ -221,9 +220,13 @@ database.runWithConn(function() {
 
 		tweetsToKeep = _.first(tweetsToKeep, 50);
 
-		console.log(tweetsToKeep[0]);
+		var tweetIds = {};
+		// _.each(tweetsToKeep, function(t) { tweetIds[t.id] = true; });
 
-		proc.done(_.pluck(tweetsToKeep, 'id'));
+		var randomTweets = _.first(_.sortBy(tweets, function(t) { return _.random(0.0, 1.0); }), 200);
+		_.each(randomTweets, function(t) { tweetIds[t.id] = true; });
+
+		proc.done(_.keys(tweetIds));
 
 	});
 

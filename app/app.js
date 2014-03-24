@@ -92,6 +92,39 @@ app.put('/training', function(req, res) {
 	});
 });
 
+var getLabeledData = function() {
+	var file = fs.readFileSync('../data/link_labels.json');
+	return JSON.parse(file);
+};
+
+var saveLabeledData = function(result, callback) {
+	var data = getLabeledData();
+	data.push(result);
+	fs.writeFile('../data/link_labels.json', JSON.stringify(data, null, 2), callback);
+};
+
+app.post('/training2', function(req, res) {
+	var num = req.param('num');
+	var data = getLinkResults(num);
+	var tech = data[req.body.techniqueIndex];
+	var result = tech.withScores[req.body.withScoresIndex];
+
+	var newResult = {
+		tweetSet : result.expandedTweetSet,
+		restaurantIds : req.body.restaurantIds,
+		label : req.body.label
+	};
+
+	saveLabeledData(newResult, function(err) {
+		if (err) {
+			res.json({success:false});
+		}
+		else {
+			res.json({success:true});
+		}
+	});
+});
+
 // **************************
 // ****** START SERVER ******
 // **************************

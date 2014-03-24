@@ -20,12 +20,7 @@ database.runWithConn(function() {
 	database.getYelpBusinesses({}, function(err, yelpBizs) {
 		if (err) { proc.bail('Failed to get yelp bizs', err); }
 
-		var twitterByYelpBiz = {};
-		_.each(yelpBizs, function(yelpBiz) {
-			if (yelpBiz.twitter && yelpBiz.twitter != '') {
-				twitterByYelpBiz[yelpBiz.id] = yelpBiz.twitter;
-			}
-		});
+		var yelpBizById = _.indexBy(yelpBizs, 'id');
 
 		new lazy(fs.createReadStream(fromFile))
 		.lines
@@ -33,9 +28,10 @@ database.runWithConn(function() {
 			return JSON.parse(line.toString());
 		})
 		.map(function(biz) {
-			biz.twitter = twitterByYelpBiz[biz.id];
-			biz.coordinate = biz.location.coordinate;
-			return _.pick(biz, 'id', 'name', 'twitter', 'coordinate');
+			var yelpBiz = yelpBizById[biz.id] || {geometry:{}};
+			biz.twitter = yelpBiz.twitter;
+			biz.coordinates = yelpBiz.geometry.coordinates;
+			return _.pick(biz, 'id', 'name', 'twitter', 'coordinates');
 		})
 		.join(function(bizs) {
 			fs.writeFile(toFile, JSON.stringify(bizs), function(err) {

@@ -12,8 +12,8 @@ var _    = require('lodash');
 // **************************
 
 var toFile = './private/extra-tweets-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
-var from1 = './private/convo-tweets-20140312T170857609Z.json';
-var from2 = './private/user-tweets-20140312T170857532Z.json';
+var from1 = './private/convo-tweets-20140323T200759157Z.json';
+var from2 = './private/user-tweets-20140323T200758755Z.json';
 
 var allTweets = [];
 
