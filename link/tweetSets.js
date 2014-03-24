@@ -344,9 +344,9 @@ var createSets = function() {
           text : tweet.text
         , id   : tweet.id
         , user : tweet.user.screen_name
-        , loc  : tweet.coordinates ? tweet.coordinates.coordinates : undefined
+        , loc  : tweet.coordinates && tweet.coordinates.coordinates.length > 0 ? tweet.coordinates.coordinates : undefined
         , date : date.substring(4, date.length - 15)
-        , initial : tweet.id == initialTweet.id
+        , initial : tweet.id == initialTweet.id ? true : undefined
       }
     };
 
@@ -387,13 +387,13 @@ var upsertSet = function(toUpsert) {
 
 var scoreSets = function() {
 
+  var tweetApi = getTweetApi();
+
   var YELP_MINI_BIZ_FILE = './private/yelp_businesses-20140323T163547057Z.json';
 
   var restaurantKeySelector = function(restaurant) {
     return restaurant.name + '____' + restaurant.twitter;
   };
-
-  var tweetApi = getTweetApi();
 
   // all restaurants by key
   var restaurants = fileDb.getData(YELP_MINI_BIZ_FILE);
@@ -401,13 +401,28 @@ var scoreSets = function() {
 
   var data = getSets(true);
 
+  var dm = new sig.DirectMentionRestuarantSignal();
+  var name = new sig.NameMatchRestuarantSignal();
+  var four = new sig.FoursquareRestuarantSignal();
+
   _.each(data, function(item) {
+
+    console.log('item ' + item.tweets[0].id);
 
     var tweets = _.map(item.tweets, function(t) { return tweetApi.getTweetById(t.id); });
 
-    item.direct_mention_score = new sig.DirectMentionRestuarantSignal().restuarantSignal(null, tweets, restaurantLookup);
-    item.fuzzy_name_score = new sig.NameMatchRestuarantSignal().restuarantSignal(null, tweets, restaurantLookup);
-    item.foursquare_score = new sig.FoursquareRestuarantSignal().restuarantSignal(null, tweets, restaurantLookup);
+    var sumScores = function(scoreLookup) {
+      var sum = 0;
+      _.each(_.pairs(scoreLookup), function(pair) {
+        var score = pair[1];
+        sum += score;
+      });
+      return sum;
+    };
+
+    item.direct_mention_score = sumScores(dm.restuarantSignal(null, tweets, restaurantLookup));
+    item.fuzzy_name_score = sumScores(name.restuarantSignal(null, tweets, restaurantLookup));
+    item.foursquare_score = sumScores(four.restuarantSignal(null, tweets, restaurantLookup));
 
   });
 
