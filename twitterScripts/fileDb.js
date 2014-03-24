@@ -20,7 +20,6 @@ var saveData = function(filePath, data) {
 
 var upsertData = function(filePath, toUpsert, keySelector) {
 	var data = getData(filePath);
-	keySelector = _.createCallback(keySelector);
 	var byKey = _.indexBy(data, keySelector);
 	var key = keySelector(toUpsert);
 	if (!byKey[key]) {

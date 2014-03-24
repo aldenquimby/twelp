@@ -15,16 +15,6 @@ var fileDb    = require('../twitterScripts/fileDb');
 
 var DATA_FILE = './private/labeled_tweet_sets.json';
 
-var guid = function() {
-  var s4 = function() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-               .toString(16)
-               .substring(1);
-  };
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-         s4() + '-' + s4() + s4() + s4();
-};
-
 var getTweetApi = function() {
 
   var TWEET_FILES  = [
@@ -52,11 +42,17 @@ var getTweetApi = function() {
 
 };
 
+var keySelector = function(item) {
+    var sorted = _.sortBy(item.tweets, 'id');
+    return _.pluck(sorted, 'id').join();
+};
+
 var createSets = function() {
 
   var tweetApi = getTweetApi();
 
-  var tweetIds = [ 
+  var tweetIds = [
+
     '399756894098583552',
     '406740861402513408',
     '411930421145128960',
@@ -330,9 +326,13 @@ var createSets = function() {
 
   var expansion = new exp.UserTimelineAndConvoTweetExpansion(tweetApi, 3*24, 3*24, 1);
 
-  var data = _.map(tweetIds, function(tweetId) {
+  var tweets = _.map(tweetIds, tweetApi.getTweetById);
+  // omg always ignore beiber
+  tweets = _.filter(tweets, function(tweet) {
+    return tweet.text.toLowerCase().indexOf('justin') == -1;
+  });
 
-    var initialTweet = tweetApi.getTweetById(tweetId);
+  var data = _.map(tweets, function(initialTweet) {
     
     var expandedTweetSet = expansion.expandTweet(initialTweet);
 
@@ -356,6 +356,10 @@ var createSets = function() {
 
   });
 
+  // remove dups
+  data = _.uniq(data, keySelector);
+
+  // save
   fileDb.saveData(DATA_FILE, data);
 
 };
@@ -376,13 +380,24 @@ var getSets = function(includeLabeled) {
 
 var upsertSet = function(toUpsert) {
 
-  var keySelector = function(item) {
-    var sortedIds = _.sortBy(item.tweets, 'id');
-    return sortedIds.join();
-  };
+  var toUpsertKey = keySelector(toUpsert);
 
-  fileDb.upsertData(DATA_FILE, toUpsert, keySelector);
+  var data = getSets(true);
 
+  var newData = [];
+
+  _.each(data, function(item) {
+
+    var key = keySelector(item);
+
+    if (toUpsertKey == key) {
+      item.label = toUpsert.label;
+    }
+
+    newData.push(item);
+  });
+
+  fileDb.saveData(DATA_FILE, newData);
 };
 
 var scoreSets = function() {
@@ -437,8 +452,4 @@ var scoreSets = function() {
 exports.createSets = createSets;
 exports.getSets = getSets;
 exports.upsertSet = upsertSet;
-
-
-scoreSets();
-
-
+exports.scoreSets = scoreSets;

@@ -101,12 +101,15 @@ app.get('/tweetSet', function(req, res) {
 app.post('/tweetSet', function(req, res) {
 	tweetSets.upsertSet(req.body);
 	console.log('upserted data!');
+	console.log(tweetSets.getSets().length + ' left');
 	res.json({success:true});
 });
 
 app.put('/tweetSet', function(req, res) {
 	tweetSets.createSets();
 	console.log('reset data!');
+	tweetSets.scoreSets();
+	console.log('scored data!');
 	res.json({success:true});
 });
 
