@@ -11,6 +11,7 @@ var exp       = require('./expansion');
 var sig       = require('./signal');
 var Technique = require('./technique').Technique;
 var fileDb    = require('../twitterScripts/fileDbHelper');
+var request   = require('request');
 
 // **************************
 // ******* CONSTANTS ********
@@ -47,6 +48,30 @@ var RochesterTechnique = new Class(Technique, {
 // ******** PROGRAM ********
 // **************************
 
+/*
+
+Step 3 - extract possible restaurants (producing a 0-1 score)
+- Rule-based unsupervised techniques
+  1. Combine scores from direct mention, foursquare, fuzzy match
+  2. If no scores > 0, use geo-location
+
+Step 4 - if necessary, handle chain restaurants
+- Use geo-location to scale scores by distance
+
+*/
+
+var displayTweet = function(tweet, initialTweetId) {
+  var date = new Date(tweet.created_at).toLocaleString();
+  return {
+      text : tweet.text
+    , id   : tweet.id
+    , user : tweet.user.screen_name
+    , loc  : tweet.coordinates && tweet.coordinates.coordinates.length > 0 ? tweet.coordinates.coordinates : undefined
+    , date : date.substring(4, date.length - 15)
+    , initial : tweet.id == initialTweetId ? true : undefined
+  }
+};
+
 // do the test
 var runExperiment = function(tweets, techniques, restaurantLookup, restaurantsById) {
 
@@ -54,47 +79,69 @@ var runExperiment = function(tweets, techniques, restaurantLookup, restaurantsBy
 
 		var tweetOutput = _.map(tweets, function(tweet) {
 
+			// Step 1 - expand tweet into relevant set of tweets
 			var expandedTweetSet = tech.expandTweet(tweet);
 
-			var scoreLookup = tech.restuarantSignal(tweet, expandedTweetSet, restaurantLookup);
-
-			var restaurantScores = tech.handleChainRestaurants(tweet, expandedTweetSet, restaurantLookup, scoreLookup);
-
-			restaurantScores = _.sortBy(restaurantScores, function(rs) {
-				return -rs.score;
-			});
-
-			restaurantScores = tech.thresholdFilter(restaurantScores);
-
-			var displayTweet = function(tweet) {
-				var date = new Date(tweet.created_at).toLocaleString();
-				return {
-					text : tweet.text
-				  , id   : tweet.id
-				  , user : tweet.user.screen_name
-				  , loc  : tweet.coordinates ? tweet.coordinates.coordinates : undefined
-				  , date : date.substring(4, date.length - 15)
-				}
+			// Step 2 - determine if the user went to a restaurant
+			var item = {
+				tweets : _.map(expandedTweetSet, displayTweet)
 			};
-			var displayScore = function(rs) {
-				var restaurant = restaurantsById[rs.restaurantId];
-				return {
-					score : rs.score,
-					id    : restaurant.id,
-				  	name  : restaurant.name,
-				  	loc   : restaurant.coordinates,
-		  			url   : 'http://www.yelp.com/biz/' + restaurant.id
-				}
-			}
+		    var sumScores = function(scoreLookup) {
+		      var sum = 0;
+		      _.each(_.pairs(scoreLookup), function(pair) {
+		        var score = pair[1];
+		        sum += score;
+		      });
+		      return sum;
+		    };
+			item.direct_mention_score = sumScores(new sig.DirectMentionRestuarantSignal().restuarantSignal(null, expandedTweetSet, restaurantLookup));
+			item.fuzzy_name_score = sumScores(new sig.NameMatchRestuarantSignal().restuarantSignal(null, expandedTweetSet, restaurantLookup));
+			item.foursquare_score = 0;// sumScores(new sig.FoursquareRestuarantSignal().restuarantSignal(null, expandedTweetSet, restaurantLookup));
 
-			return {
-				tweet            : displayTweet(tweet)
-			  , expandedTweetSet : _.map(expandedTweetSet, displayTweet)
-			  , scoreLookup      : scoreLookup
-			  , restaurantScores : _.map(restaurantScores, displayScore)
-			};
+			request.post('http://localhost:4444/restaurants/classify', item,
+			    function (err, resp, body) {
+					if (err || resp.statusCode != 200) {
+						proc.bail('classify failed!');
+					}
+					var apiResp = JSON.parse(body);
+					var score = apiResp.data;
 
+					if (score > 0.5) {
+
+						// Step 3 - extract possible restaurants (producing a 0-1 score)
+						var scoreLookup = tech.restuarantSignal(tweet, expandedTweetSet, restaurantLookup);
+
+						// Step 4 - if necessary, handle chain restaurants
+						var restaurantScores = tech.handleChainRestaurants(tweet, expandedTweetSet, restaurantLookup, scoreLookup);
+						restaurantScores = _.sortBy(restaurantScores, function(rs) {
+							return -rs.score;
+						});
+
+						restaurantScores = tech.thresholdFilter(restaurantScores);
+			
+						var displayScore = function(rs) {
+							var restaurant = restaurantsById[rs.restaurantId];
+							return {
+								score : rs.score,
+								id    : restaurant.id,
+							  	name  : restaurant.name,
+							  	loc   : restaurant.coordinates,
+					  			url   : 'http://www.yelp.com/biz/' + restaurant.id
+							}
+						};
+
+						return {
+							tweet            : displayTweet(tweet)
+						  , expandedTweetSet : _.map(expandedTweetSet, displayTweet)
+						  , scoreLookup      : scoreLookup
+						  , restaurantScores : _.map(restaurantScores, displayScore)
+						};
+					}
+			    }
+			);
 		});
+
+		// TODO ugh
 
 		var withScores = [];
 		var withoutScores = [];
