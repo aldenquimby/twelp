@@ -6,6 +6,7 @@ var _         = require('lodash');
 var proc      = require('../util/process');
 var fs        = require('fs');
 var exp       = require('./expansion');
+var sig       = require('./signal');
 var fileDb    = require('../twitterScripts/fileDb');
 
 // ************************
@@ -24,7 +25,7 @@ var guid = function() {
          s4() + '-' + s4() + s4() + s4();
 };
 
-var createSets = function(callback) {
+var getTweetApi = function() {
 
   var TWEET_FILES  = [
     './private/tweets-20140227T030314518Z.json',
@@ -40,8 +41,7 @@ var createSets = function(callback) {
     return tweet.user.id;
   });
 
-  // tweet API for techniques to use
-  var tweetApi = {
+  return {
     getTweetById: function(id) {
       return tweetsById[id];
     },
@@ -49,6 +49,12 @@ var createSets = function(callback) {
       return tweetsByUser[user_id];
     }
   };
+
+};
+
+var createSets = function() {
+
+  var tweetApi = getTweetApi();
 
   var tweetIds = [ 
     '399756894098583552',
@@ -350,7 +356,7 @@ var createSets = function(callback) {
 
   });
 
-  fileDb.saveData(DATA_FILE, data, callback);
+  fileDb.saveData(DATA_FILE, data);
 
 };
 
@@ -368,14 +374,44 @@ var getSets = function(includeLabeled) {
 
 };
 
-var upsertSet = function(toUpsert, callback) {
+var upsertSet = function(toUpsert) {
 
   var keySelector = function(item) {
     var sortedIds = _.sortBy(item.tweets, 'id');
     return sortedIds.join();
   };
 
-  fileDb.upsertData(DATA_FILE, toUpsert, keySelector, callback);
+  fileDb.upsertData(DATA_FILE, toUpsert, keySelector);
+
+};
+
+var scoreSets = function() {
+
+  var YELP_MINI_BIZ_FILE = './private/yelp_businesses-20140323T163547057Z.json';
+
+  var restaurantKeySelector = function(restaurant) {
+    return restaurant.name + '____' + restaurant.twitter;
+  };
+
+  var tweetApi = getTweetApi();
+
+  // all restaurants by key
+  var restaurants = fileDb.getData(YELP_MINI_BIZ_FILE);
+  var restaurantLookup = _.groupBy(restaurants, restaurantKeySelector);
+
+  var data = getSets(true);
+
+  _.each(data, function(item) {
+
+    var tweets = _.map(item.tweets, function(t) { return tweetApi.getTweetById(t.id); });
+
+    item.direct_mention_score = new sig.DirectMentionRestuarantSignal().restuarantSignal(null, tweets, restaurantLookup);
+    item.fuzzy_name_score = new sig.NameMatchRestuarantSignal().restuarantSignal(null, tweets, restaurantLookup);
+    item.foursquare_score = new sig.FoursquareRestuarantSignal().restuarantSignal(null, tweets, restaurantLookup);
+
+  });
+
+  fileDb.saveData(DATA_FILE, data);
 
 };
 
@@ -386,3 +422,8 @@ var upsertSet = function(toUpsert, callback) {
 exports.createSets = createSets;
 exports.getSets = getSets;
 exports.upsertSet = upsertSet;
+
+
+scoreSets();
+
+

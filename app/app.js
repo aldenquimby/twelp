@@ -99,17 +99,15 @@ app.get('/tweetSet', function(req, res) {
 });
 
 app.post('/tweetSet', function(req, res) {
-	tweetSets.upsertSet(req.body, function(err) {
-		console.log('upserted data!');
-		res.json({success:true});
-	});
+	tweetSets.upsertSet(req.body);
+	console.log('upserted data!');
+	res.json({success:true});
 });
 
 app.put('/tweetSet', function(req, res) {
-	tweetSets.createSets(function(err) {
-		console.log('reset data!');
-		res.json({success:true});
-	});
+	tweetSets.createSets();
+	console.log('reset data!');
+	res.json({success:true});
 });
 
 // **************************

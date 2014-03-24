@@ -14,11 +14,11 @@ var getData = function(filePath) {
 	return JSON.parse(file);
 };
 
-var saveData = function(filePath, data, callback) {
-	fs.writeFile(filePath, JSON.stringify(data, null, 2), callback);
+var saveData = function(filePath, data) {
+	fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 };
 
-var upsertData = function(filePath, toUpsert, keySelector, callback) {
+var upsertData = function(filePath, toUpsert, keySelector) {
 	var data = getData(filePath);
 	keySelector = _.createCallback(keySelector);
 	var byKey = _.indexBy(data, keySelector);
@@ -30,7 +30,7 @@ var upsertData = function(filePath, toUpsert, keySelector, callback) {
 		console.log('updating...');
 	}
 	byKey[key] = toUpsert;
-	saveData(filePath, _.values(byKey), callback);
+	saveData(filePath, _.values(byKey));
 };
 
 var getTweetsFromFiles = function(files) {
