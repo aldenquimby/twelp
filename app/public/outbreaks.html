@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8"/>
+	<title>TWELP</title>
+	<base target="_blank">
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="/less/flat-ui.css">
+    <link rel="stylesheet" href="/less/index.css">
+    <link rel="stylesheet" href="/less/outbreaks.css">
+</head>
+
+<body>
+	<div class="container"></div>
+</body>
+
+<!-- JS framework -->
+<script type="text/javascript" src="/javascripts/framework/jquery-2.1.0.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/lodash.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/moment.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/backbone-min.js"></script>  
+<script type="text/javascript" src="/javascripts/framework/mustache.min.js"></script>
+<script type="text/javascript" src="/javascripts/framework/jquery.mustache.min.js"></script>
+
+<!-- JS views -->
+<script src="/javascripts/outbreak/outbreaksView.js"></script>
+
+<!-- data -->
+<script>
+	var outbreaks = 
+	[
+	  {
+	    "id": 1,
+	    "date_created": "2012-04-23T18:25:43.511Z",
+	    "status": "Open",
+	    "restaurant": {
+	      "id": "YELP_ID_HERE",
+	      "name": "YELP_NAME_HERE",
+	      "yelp_url": "YELP_URL_HERE",
+	      "business_url": "BIZ_URL_HERE",
+	      "phone": "+17182384100",
+	      "location": {
+	          "line_1": "6402 8th Ave",
+	          "line_2": null,
+	          "line_3": null,
+	          "city": "Brooklyn",
+	          "state": "NY",
+	          "postal_code": "11220",
+	          "coordinates": [ 
+	            -73.98643806,
+	            40.7072234
+	          ]
+	      },
+	    },
+	    "documents": [
+	      {
+	        "id": 1,
+	        "source": "311",
+	        "classification": {
+	          "sick_score": 0,
+	          "link_score": 0,
+	          "sick_date": "2012-04-23T18:25:43.511Z",
+	          "visit_date": "2012-04-23T18:25:43.511Z"
+	        },
+	        "data": {
+	          "complaint_number": "F-12-02-08-0076",
+	          "sr_number": "1-1-726152079",
+	          "site_name": "HOWARD BEACH BOAT CLUB",
+	          "date": "12-02-08T00:00:00.000Z",
+	          "complaint_status": "05-Close",
+	          "location": {
+	            "line_1": "59 RUSSELL STREET",
+	            "borough": "Queens"
+	          }
+	        }
+	      },
+	      {
+	        "id": 1,
+	        "source": "Yelp",
+	        "classification": {
+	          "sick_score": 0,
+	          "link_score": 0,
+	          "sick_date": "2012-04-23T18:25:43.511Z",
+	          "visit_date": "2012-04-23T18:25:43.511Z"
+	        },
+	        "data": {
+	          "id": "YELP_REVIEW_ID",
+	          "created_date": "12-02-08T00:00:00.000Z",
+	          "rating": 4.0,
+	          "text": "YELP_REVIEW_TEXT",
+	          "user": {
+	            "name": "USER_NAME",
+	            "photo_url": "USER_PHOTO_URL"
+	          }
+	        }
+	      },
+	      {
+	        "id": 1,
+	        "source": "Twitter",
+	        "classification": {
+	          "sick_score": 0,
+	          "link_score": 0,
+	          "sick_date": "2012-04-23T18:25:43.511Z",
+	          "visit_date": "2012-04-23T18:25:43.511Z"
+	        },
+	        "data": {
+	          "tweet": {
+	            "id": "TWEET_ID_HERE",
+	            "date": "Oct 09 2013 23:36:00",
+	            "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	            "user": {
+	              "screen_name": "peontiffany",
+	              "name": "Tiffany"
+	            },
+	            "location": [
+	              -73.98643806,
+	              40.7072234
+	            ]
+	          },
+	          "context": [
+	            {
+	              "id": "TWEET_ID_HERE",
+	              "date": "Oct 09 2013 23:36:00",
+	              "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	              "user": "vinneycavallo",
+	              "user": {
+	                "id": "27077953",
+	                "screen_name": "vinneycavallo",
+	                "name": "Vinny"
+	              },
+	              "location": [
+	                -73.98643806,
+	                40.7072234
+	              ]
+	            },
+	            {
+	              "id": "TWEET_ID_HERE",
+	              "date": "Oct 09 2013 23:36:00",
+	              "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	              "user": {
+	                "id": "27077953",
+	                "screen_name": "vinneycavallo",
+	                "name": "Vinny"
+	              },
+	              "location": [
+	                -73.98643806,
+	                40.7072234
+	              ]
+	            }
+	          ]  
+	        }
+	      },
+	      {
+	        "id": 1,
+	        "source": "Twitter",
+	        "classification": {
+	          "sick_score": 0,
+	          "link_score": 0,
+	          "sick_date": "2012-04-23T18:25:43.511Z",
+	          "visit_date": "2012-04-23T18:25:43.511Z"
+	        },
+	        "data": {
+	          "tweet": {
+	            "id": "TWEET_ID_HERE",
+	            "date": "Oct 09 2013 23:36:00",
+	            "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	            "user": {
+	              "screen_name": "peontiffany",
+	              "name": "Tiffany"
+	            },
+	            "location": [
+	              -73.98643806,
+	              40.7072234
+	            ]
+	          },
+	          "context": [
+	            {
+	              "id": "TWEET_ID_HERE",
+	              "date": "Oct 09 2013 23:36:00",
+	              "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	              "user": "vinneycavallo",
+	              "user": {
+	                "id": "27077953",
+	                "screen_name": "vinneycavallo",
+	                "name": "Vinny"
+	              },
+	              "location": [
+	                -73.98643806,
+	                40.7072234
+	              ]
+	            },
+	            {
+	              "id": "TWEET_ID_HERE",
+	              "date": "Oct 09 2013 23:36:00",
+	              "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	              "user": {
+	                "id": "27077953",
+	                "screen_name": "vinneycavallo",
+	                "name": "Vinny"
+	              },
+	              "location": [
+	                -73.98643806,
+	                40.7072234
+	              ]
+	            }
+	          ]  
+	        }
+	      }
+	    ]
+	  },
+	  {
+	    "id": 2,
+	    "date_created": "2012-04-23T18:25:43.511Z",
+	    "status": "Open",
+	    "restaurant": {
+	      "id": "YELP_ID_HERE",
+	      "name": "YELP_NAME_HERE",
+	      "yelp_url": "YELP_URL_HERE",
+	      "business_url": "BIZ_URL_HERE",
+	      "phone": "+17182384100",
+	      "location": {
+	          "line_1": "6402 8th Ave",
+	          "line_2": null,
+	          "line_3": null,
+	          "city": "Brooklyn",
+	          "state": "NY",
+	          "postal_code": "11220",
+	          "coordinates": [ 
+	            -73.98643806,
+	            40.7072234
+	          ]
+	      },
+	    },
+	    "documents": [
+	      {
+	        "id": 1,
+	        "source": "311",
+	        "classification": {
+	          "sick_score": 0,
+	          "link_score": 0,
+	          "sick_date": "2012-04-23T18:25:43.511Z",
+	          "visit_date": "2012-04-23T18:25:43.511Z"
+	        },
+	        "data": {
+	          "complaint_number": "F-12-02-08-0076",
+	          "sr_number": "1-1-726152079",
+	          "site_name": "HOWARD BEACH BOAT CLUB",
+	          "date": "12-02-08T00:00:00.000Z",
+	          "complaint_status": "05-Close",
+	          "location": {
+	            "line_1": "59 RUSSELL STREET",
+	            "borough": "Queens"
+	          }
+	        }
+	      },
+	      {
+	        "id": 1,
+	        "source": "Yelp",
+	        "classification": {
+	          "sick_score": 0,
+	          "link_score": 0,
+	          "sick_date": "2012-04-23T18:25:43.511Z",
+	          "visit_date": "2012-04-23T18:25:43.511Z"
+	        },
+	        "data": {
+	          "id": "YELP_REVIEW_ID",
+	          "created_date": "12-02-08T00:00:00.000Z",
+	          "rating": 4.0,
+	          "text": "YELP_REVIEW_TEXT",
+	          "user": {
+	            "name": "USER_NAME",
+	            "photo_url": "USER_PHOTO_URL"
+	          }
+	        }
+	      },
+	      {
+	        "id": 1,
+	        "source": "Twitter",
+	        "classification": {
+	          "sick_score": 0,
+	          "link_score": 0,
+	          "sick_date": "2012-04-23T18:25:43.511Z",
+	          "visit_date": "2012-04-23T18:25:43.511Z"
+	        },
+	        "data": {
+	          "tweet": {
+	            "id": "TWEET_ID_HERE",
+	            "date": "Oct 09 2013 23:36:00",
+	            "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	            "user": {
+	              "screen_name": "peontiffany",
+	              "name": "Tiffany"
+	            },
+	            "location": [
+	              -73.98643806,
+	              40.7072234
+	            ]
+	          },
+	          "context": [
+	            {
+	              "id": "TWEET_ID_HERE",
+	              "date": "Oct 09 2013 23:36:00",
+	              "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	              "user": "vinneycavallo",
+	              "user": {
+	                "id": "27077953",
+	                "screen_name": "vinneycavallo",
+	                "name": "Vinny"
+	              },
+	              "location": [
+	                -73.98643806,
+	                40.7072234
+	              ]
+	            },
+	            {
+	              "id": "TWEET_ID_HERE",
+	              "date": "Oct 09 2013 23:36:00",
+	              "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	              "user": {
+	                "id": "27077953",
+	                "screen_name": "vinneycavallo",
+	                "name": "Vinny"
+	              },
+	              "location": [
+	                -73.98643806,
+	                40.7072234
+	              ]
+	            }
+	          ]  
+	        }
+	      },
+	      {
+	        "id": 1,
+	        "source": "Twitter",
+	        "classification": {
+	          "sick_score": 0,
+	          "link_score": 0,
+	          "sick_date": "2012-04-23T18:25:43.511Z",
+	          "visit_date": "2012-04-23T18:25:43.511Z"
+	        },
+	        "data": {
+	          "tweet": {
+	            "id": "TWEET_ID_HERE",
+	            "date": "Oct 09 2013 23:36:00",
+	            "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	            "user": {
+	              "screen_name": "peontiffany",
+	              "name": "Tiffany"
+	            },
+	            "location": [
+	              -73.98643806,
+	              40.7072234
+	            ]
+	          },
+	          "context": [
+	            {
+	              "id": "TWEET_ID_HERE",
+	              "date": "Oct 09 2013 23:36:00",
+	              "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	              "user": "vinneycavallo",
+	              "user": {
+	                "id": "27077953",
+	                "screen_name": "vinneycavallo",
+	                "name": "Vinny"
+	              },
+	              "location": [
+	                -73.98643806,
+	                40.7072234
+	              ]
+	            },
+	            {
+	              "id": "TWEET_ID_HERE",
+	              "date": "Oct 09 2013 23:36:00",
+	              "text": "@scottadhoc @peontiffany there's a fine line between \"completely\" and \"really alotly\"",
+	              "user": {
+	                "id": "27077953",
+	                "screen_name": "vinneycavallo",
+	                "name": "Vinny"
+	              },
+	              "location": [
+	                -73.98643806,
+	                40.7072234
+	              ]
+	            }
+	          ]  
+	        }
+	      }
+	    ]
+	  }
+	]
+	;
+</script>
+
+<!-- app start -->
+<script>
+	$(function () {
+		$.Mustache.addFromDom();
+
+		new OutbreaksView({ el: $('.container') })
+	});
+</script>
+
+<!-- templates -->
+<script id="outbreaks" type="text/html">
+	<div class="outbreaks">
+	<h2>Outbreaks</h2>
+	<div class="outbreak-back"><a href="#">Back</a></div>
+	<div class="outbreak-cards">
+
+	</div>
+	<div class="outbreak-wrapper">
+
+	</div>
+</script>
+
+<script id="outbreak-card" type="text/html">
+	<div class="outbreak-card well" data-id="{{id}}">
+		<div class="row">
+			<dl class="dl-horizontal">
+			  <dt>Restaurant</dt>
+			  <dd>{{restaurant.name}}</dd>
+			  <dt>Date</dt>
+			  <dd>{{date_created}}</dd>
+  			  <dt>Yelp Reviews</dt>
+			  <dd>{{yelpCount}}</dd>
+  			  <dt>311 Complaints</dt>
+			  <dd>{{threeOneOneCount}}</dd>
+  			  <dt>Tweets</dt>
+			  <dd>{{twitterCount}}</dd>
+			</dl>
+		</div>
+	</div>
+</script>
+
+<script id="outbreak" type="text/html">
+	<div class="outbreak" data-id="{{id}}">
+		<div class="row well">
+			<dl class="dl-horizontal">
+			  <dt>Restaurant</dt>
+			  <dd><a href="{{mapUrl}}">{{restaurant.name}}</a></dd>
+			  <dt>Date</dt>
+			  <dd>{{date_created}}</dd>
+			</dl>
+		</div>
+	</div>
+</script>
+
+</html>

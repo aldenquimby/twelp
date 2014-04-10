@@ -273,7 +273,7 @@
             "url": "http://www.yelp.com/biz/KWPTCL3T9E3HG22s3BspfQ"
           }
         ],
-        "label": "MAYBE"
+        "label": "NO"
       },
       {
         "tweet": {
@@ -542,7 +542,7 @@
             "url": "http://www.yelp.com/biz/KWPTCL3T9E3HG22s3BspfQ"
           }
         ],
-        "label": "MAYBE"
+        "label": "NO"
       },
       {
         "tweet": {
@@ -924,8 +924,7 @@
             ],
             "url": "http://www.yelp.com/biz/UxL31CXi38Rd5RWFlDZdlQ"
           }
-        ],
-        "label": "MAYBE"
+        ]
       },
       {
         "tweet": {
@@ -1119,8 +1118,7 @@
             ],
             "url": "http://www.yelp.com/biz/ggm-5YHqX5pXgk5Uh42dEA"
           }
-        ],
-        "label": "NO"
+        ]
       },
       {
         "tweet": {
@@ -1341,8 +1339,7 @@
             ],
             "url": "http://www.yelp.com/biz/Z8pm4rLTBki7OLgtbcTXEg"
           }
-        ],
-        "label": "NO"
+        ]
       }
     ],
     "withoutScores": [
@@ -11737,8 +11734,7 @@
             ],
             "url": "http://www.yelp.com/biz/9geyoUfHITKKeoWETxKqVg"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -11925,8 +11921,7 @@
             ],
             "url": "http://www.yelp.com/biz/9geyoUfHITKKeoWETxKqVg"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -12279,8 +12274,7 @@
             ],
             "url": "http://www.yelp.com/biz/B_HkncKcyD0ZL3LsHmnzqg"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -12319,8 +12313,7 @@
             ],
             "url": "http://www.yelp.com/biz/9geyoUfHITKKeoWETxKqVg"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {
@@ -12367,8 +12360,7 @@
             ],
             "url": "http://www.yelp.com/biz/GOsQR76O9vRQy9aZfISs2w"
           }
-        ],
-        "label": "YES"
+        ]
       },
       {
         "tweet": {

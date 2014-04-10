@@ -40,7 +40,7 @@ app.configure('production', function(){
 // **************************
 
 var linkResultsPath = function(num) {
-	return '../data/link_results_' + num + '.json';
+	return './data/link_results_' + num + '.json';
 };
 
 var getLinkResults = function(num) {
