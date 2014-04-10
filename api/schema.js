@@ -55,7 +55,6 @@ var YelpBusinessSchema = new Schema({
     created_at: { type: Date, required: true  },
     id: { type: String, required: true, index: {unique: true, dropDups: true} },
     url: { type: String },
-    site: String,
     twitter: String,
     geometry: { 
         type: { type: String },

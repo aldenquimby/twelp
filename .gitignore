@@ -20,3 +20,6 @@ private
 
 # compiled less
 **/less/*.css
+
+# sublime
+*.sublime-workspace

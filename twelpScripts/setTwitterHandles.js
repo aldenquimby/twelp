@@ -15,31 +15,40 @@ var fs        = require('fs');
 
 var fromFile = './private/yelp/20140408_businesses.json';
 
-new lazy(fs.createReadStream(fromFile))
-.lines
-.map(function(line) { return JSON.parse(line.toString()); })
-.take(50)
-.forEach(function(biz) {
-	var id = biz.id;
-	var url = biz.business_url;
+database.runWithConn(function() {
 
-	if (url && url != '') {
+	new lazy(fs.createReadStream(fromFile))
+	.lines
+	.map(function(line) { return JSON.parse(line.toString()); })
+	.forEach(function(biz) {
+		var id = biz.id;
+		var url = biz.business_url;
 
-		extractor.twitterHandleFromBiz(url, function(err, username) {
-			if (err) {
-				console.log(err);
-			}
-			else if (username) {
-				console.log(id + ' ---> ' + username);
-			}
-			else {
-				console.log(id + ' ---> NO_TWITTER_FOUND');
-			}
-		});
+		if (url && url != '') {
 
-	}
-	else {
-		console.log(id + ' ---> NO_URL_FOUND');
-	}
+			extractor.twitterHandleFromBiz(url, function(err, username) {
+				if (err) {
+					console.log(err);
+				}
+				else if (username) {
+					console.log(id + ' ---> ' + username);
+
+					database.upsertYelpBusiness(id, { twitter : username }, function(err) {
+						if (err) { 
+							proc.bail('Failed to upsert biz ' + id, err); 
+						}
+					});
+				}
+				else {
+					console.log(id + ' ---> NO_TWITTER_FOUND');
+				}
+			});
+
+		}
+		else {
+			console.log(id + ' ---> NO_URL_FOUND');
+		}
+
+	});
 
 });
