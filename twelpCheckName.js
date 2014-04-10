@@ -11,7 +11,7 @@ var proc     = require('./util/process');
 // ******** PROGRAM ********
 // **************************
 
-var fromFile = './private/yelp_businesses.json';
+var fromFile = './private/yelp/yelp_businesses-20140323T163547057Z.json';
 
 var bizNames = JSON.parse(fs.readFileSync(fromFile));
 

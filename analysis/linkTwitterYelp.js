@@ -39,24 +39,3 @@ exports.twitterHandleFromBiz = function(bizUrl, callback) {
 		callback(null, username);
 	});
 };
-
-exports.twitterHandleFromYelp = function(yelpBizUrl, callback) {
-	request(yelpBizUrl, function(err, resp, body) {
-		if (err || resp.statusCode != 200) {
-			return callback(requestFailedMsg('Failed to download yelp page', err, resp));
-		}
-		$ = cheerio.load(body);
-
-		var bizUrl = $('#bizUrl a');
-
-		if (bizUrl.length == 0) {
-			return callback(null, null, null); // no error, no bizUrl, no twitter
-		}
-
-		bizUrl = 'http://' + bizUrl.text();
-
-		exports.twitterHandleFromBiz(bizUrl, function(err, username) {
-			callback(err, bizUrl, username);
-		});
-	});
-};

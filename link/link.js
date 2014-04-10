@@ -22,7 +22,7 @@ var TWEET_FILES  = [
 	'./private/extra-tweets-20140312T171055700Z.json',
 	'./private/extra-tweets-20140323T201012251Z.json',
 ];
-var YELP_MINI_BIZ_FILE = './private/yelp_businesses-20140323T163547057Z.json';
+var YELP_MINI_BIZ_FILE = './private/yelp/yelp_businesses-20140323T163547057Z.json';
 
 // **************************
 // ******** CLASSES *********

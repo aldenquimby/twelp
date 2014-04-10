@@ -14,7 +14,7 @@ var fs       = require('fs');
 // ******** PROGRAM ********
 // **************************
 
-var fromFile = './private/20140321_businesses.json';
+var fromFile = './private/yelp/20140321_businesses.json';
 
 new lazy(fs.createReadStream(fromFile))
 .lines

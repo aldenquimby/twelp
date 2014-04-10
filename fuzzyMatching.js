@@ -128,7 +128,7 @@ return;
 
 
 var TWEETS_FILE = './private/tweets-20140227T030314518Z.json';
-var YELP_BIZ_FILE = './private/yelp_businesses.json';
+var YELP_BIZ_FILE = './private/yelp/yelp_businesses-20140323T163547057Z.json';
 
 var tweets = JSON.parse(fs.readFileSync(TWEETS_FILE));
 var bizs = JSON.parse(fs.readFileSync(YELP_BIZ_FILE));

@@ -17,7 +17,7 @@ var request  = require('request');
 
 var MAX_GOOGLE_API_CALLS = 2500;
 
-var FROM_FILE = './private/20140321_businesses.json';
+var FROM_FILE = './private/yelp/20140321_businesses.json';
 
 var FAILED_GEO_CODES = [
 	'6122 188th St, College Point, NY, 11356',

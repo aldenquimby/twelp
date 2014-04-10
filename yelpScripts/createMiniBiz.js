@@ -12,8 +12,8 @@ var database = require('../api/database');
 // ******** PROGRAM ********
 // **************************
 
-var fromFile = './private/20140321_businesses.json';
-var toFile = './private/yelp_businesses-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
+var fromFile = './private/yelp/20140321_businesses.json';
+var toFile = './private/yelp/yelp_businesses-' + new Date().toJSON().replace(/:|-/g, '').replace('.', '') + '.json';
 
 database.runWithConn(function() {
 
