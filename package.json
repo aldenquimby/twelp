@@ -8,12 +8,10 @@
   },
   "dependencies": {
     "cheerio": "*",
-    "ejs": "*",
     "express": "3.x",
     "factual-api": "*",
     "fuzzy": "*",
     "fuzzyset.js": "*",
-    "geo": "*",
     "jsclass": "*",
     "json2csv": "*",
     "lazy": "*",
